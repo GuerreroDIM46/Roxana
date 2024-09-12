@@ -94,7 +94,7 @@ Incluir pantallazos
 - **¿Puede funcionar mi aplicación en un equipo local fuera de la red de Defensa?** 
 La aplicación está diseñada para poder funcionar sin ningún elemento de la red de Defensa.
   
-- **¿Puede funcionar mi aplicación en un ordenador corporativo?
+- **¿Puede funcionar mi aplicación en un ordenador corporativo?**
 La aplicación está accesible en Internet.
   
 
