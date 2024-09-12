@@ -59,7 +59,7 @@ La guía de usuario se encuentra en el siguiente [enlace]()
 
 **URL,s del proyecto:**
 
-- [Enlace al repositorio](https://git.institutomilitar.com/GuerreroDIM46/roxanne) 
+- [Enlace al repositorio](https://git.institutomilitar.com/GuerreroDIM46/roxana) 
 - [Documentación API]()
 
 **Despliegue:**
