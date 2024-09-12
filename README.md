@@ -1,4 +1,3 @@
-
 # Módulo DLESUC.
 
 ## Objetivo.
@@ -60,7 +59,7 @@ La guía de usuario se encuentra en el siguiente [enlace]()
 
 **URL,s del proyecto:**
 
-- [Enlace al repositorio](https://git.institutomilitar.com/GuerreroDIM46/dlesuc) 
+- [Enlace al repositorio](https://git.institutomilitar.com/GuerreroDIM46/roxanne) 
 - [Documentación API]()
 
 **Despliegue:**
@@ -78,9 +77,9 @@ Incluir pantallazos
 
 ## Equipo SCRUM
 
-- **Scrum Master:** D. Javier Ramos Castellano ??
+- **Scrum Master:** Comandante D. Ismael Lanchas Diaz.
 
-- **Product Owner:** Tcol. D. Álvaro Fernando  Moreno Hernán (MALE SECPLO) ??
+- **Product Owner:** Capitán D. Xavier Guerrero Fernández.
 
 - **Equipo Desarrollo:**
   - Capitán D. Xavier Guerrero Fernández.
@@ -92,9 +91,11 @@ Incluir pantallazos
 
 ## Preguntas frecuentes
 
-- **¿Puede funcionar mi aplicación en un equipo local fuera de la red de Defensa?**
+- **¿Puede funcionar mi aplicación en un equipo local fuera de la red de Defensa?** 
+La aplicación está diseñada para poder funcionar sin ningún elemento de la red de Defensa.
   
 - **¿Puede funcionar mi aplicación en un ordenador corporativo?
+La aplicación está accesible en Internet.
   
 
 ## Derechos de autor y licencias
