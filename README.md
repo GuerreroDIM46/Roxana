@@ -1,110 +1,40 @@
-# ROXANA.
+# **Descripción de la Aplicación**
 
-## Objetivo.
+Esta aplicación móvil está diseñada para automatizar tareas logísticas, permitiendo la **validación de artículos** a través del escaneo de **códigos de barras**. Los usuarios pueden gestionar **listados de artículos** descargados desde una API externa, operar de forma **offline** y sincronizar los datos cuando se recupere la conexión a Internet.
 
+## **Características principales**
+- **Escaneo de códigos de barras**: Facilita la validación de artículos en listados de recepción, expedición, inventarios, etc.
+- **Gestión offline/online**: Permite descargar listados para trabajar sin conexión y sincronizarlos cuando hay conectividad.
+- **Sincronización automática**: Los datos locales se suben automáticamente cuando se detecta conexión a Internet.
+- **Personalización de la presentación**: La API proporciona los datos de presentación, permitiendo personalizar cómo se muestran los listados y artículos en la interfaz.
+- **Constructor de pantallas**: Permite configurar las pantallas según las necesidades del usuario y la naturaleza de los listados.
 
-## Antecedentes - Solicitud de UCO.
+## **Requisitos del sistema**
+- Dispositivo Android.
+- Conexión a una API externa que gestione la lógica de negocio y la presentación de datos.
+- Dependencias: **Vue.js** y **Cordova** para el desarrollo móvil nativo.
 
-De acuerdo a mensajería interpersonal y nombramiento oficial de 01/07/2024.
+## **Instalación**
+1. Clonar el repositorio en el entorno de desarrollo.
+2. Ejecutar el comando `npm install` para instalar las dependencias.
+3. Para compilar la aplicación para dispositivos móviles, utilizar Cordova con `cordova build android`.
+4. Desplegar la aplicación en el dispositivo móvil.
 
-## Descripción general del proyecto
+## **Uso**
+1. Iniciar sesión en la aplicación.
+2. Descargar listados de artículos desde la API.
+3. Validar los artículos mediante el lector de códigos de barras.
+4. Sincronizar los listados validados una vez que la conexión esté disponible.
 
-**Motivación de la UCO:**
+## **Despliegue en Internet**
 
+### **API**:
+- Servidor Testing: [API Testing](https://roxanaapitest.manabo.org/api)
+- Despliegue: [API](https://.../api)
 
+### **Aplicación (.apk)**:
+- Puedes descargar la última versión del APK desde [aquí](https://github.com/usuario/repositorio/releases/download/v1.0/app.apk).
 
-**¿Por qué se desarrolló el proyecto?**
-
-
-
-**Solución propuesta**
-
-
-
-**Aspectos de mejora y aprendizaje tras el proyecto**
-
-
-
-**Aspectos positivos del proyecto**
-
-
-## Estado del proyecto
-
-
-
-## Requisitos del entorno de desarrollo.
-- Se emplearán las herramientas de desarrollo autorizadas por el Ministerio de Defensa estudiadas en el curso.
-
-
-**Requisitos del Backend**
-
- 
-
-**Requisitos del Frontend**
- - Visual Studio Code.
- - Dispositivo de usuario final proporcionado por el MALE.
- 
-**Requisitos de BBDD**
- - Base de datos offline?
-
-## Guias:
-
-**Guía de instalación y desarrollo**
-
-Dada la idiosincracia del proyecto no es posible instalar fuera de la red corporativa el software.
-
-**Guía de usuario**
-
-La guía de usuario se encuentra en el siguiente [enlace]()
-
-**URL,s del proyecto:**
-
-- [Enlace al repositorio](https://git.institutomilitar.com/GuerreroDIM46/roxana) 
-- [Documentación API]()
-
-**Despliegue:**
-
-- Apk en lectora
-
-## Diagrama de Clases:
-
-![Diagrama de clases]()
-
-## Funcionalidades del proyecto:
-
-Incluir pantallazos
-
-
-## Equipo SCRUM
-
-- **Scrum Master:** Comandante D. Ismael Lanchas Diaz.
-
-- **Product Owner:** Capitán D. Xavier Guerrero Fernández.
-
-- **Equipo Desarrollo:**
-  - Capitán D. Xavier Guerrero Fernández.
-  - Capitán D. Rodrigo de Dios García.
-
-## Bugs
-
-- 
-
-## Preguntas frecuentes
-
-- **¿Puede funcionar mi aplicación en un equipo local fuera de la red de Defensa?** 
-La aplicación está diseñada para poder funcionar sin ningún elemento de la red de Defensa.
-  
-- **¿Puede funcionar mi aplicación en un ordenador corporativo?**
-La aplicación está accesible en Internet.
-  
-
-## Derechos de autor y licencias
-
-Esta aplicación, así como todo su contenido, incluyendo pero no limitando a su diseño, código fuente, funcionalidades y documentación, son propiedad exclusiva del Ministerio de Defensa. Todos los derechos de autor, derechos de propiedad intelectual y otros derechos relacionados están reservados para el Ministerio de Defensa.
-
-Queda expresamente prohibida la reproducción, distribución, modificación, divulgación o cualquier otro uso no autorizado de esta aplicación o parte de la misma sin el consentimiento previo y por escrito del Ministerio de Defensa. Cualquier violación de estos términos estará sujeta a las medidas legales correspondientes.
-
-El acceso y uso de esta aplicación están autorizados únicamente para los fines establecidos por el Ministerio y para aquellos usuarios debidamente autorizados. Cualquier uso no autorizado será considerado como una violación de los derechos de propiedad intelectual del Ministerio y puede dar lugar a emprender acciones legales.
-
-Este aviso se aplica a todas las versiones, actualizaciones y mejoras de la aplicación. Al utilizar esta aplicación, usted acepta y reconoce los derechos de propiedad intelectual del Ministerio y se compromete a cumplir con los términos y condiciones establecidos en este aviso.
+## **Contribuciones**
+Las contribuciones al proyecto son bienvenidas. Para realizar cambios, crear un fork del repositorio y enviar una solicitud de extracción.
 
