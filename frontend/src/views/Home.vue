@@ -1,12 +1,19 @@
 <script>
-
+import Escaner from '@/components/Escaner.vue'
 export default {
     data() {
         return {
+            codigoEscaneado: null,
             alertaVisible: false
         }
     },
+    components: {
+        Escaner,
+    },
     methods: {
+        siEscaneado(codigo) {
+            this.codigoEscaneado = codigo
+        },
         mostrarAlerta() {
             this.alertaVisible = true
         }
@@ -39,11 +46,20 @@ export default {
         <div class="alert alert-success mt-4" v-if="alertaVisible" role="alert">
             ¡Has hecho clic en el botón!
         </div>
+
+        <div class="m-4">
+        <h1>Escanear Código de Barras</h1>
+        <div v-if="codigoEscaneado">
+            <h2>Código escaneado:</h2>
+            <p>{{ codigoEscaneado }}</p>
+        </div>
+        <Escaner @codigoEscaneado="siEscaneado" />
+    </div>
     </div>
 </template>
 
 
 
 <style scoped>
-/* Puedes agregar estilos personalizados si es necesario */
+
 </style>

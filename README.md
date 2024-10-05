@@ -19,9 +19,10 @@ Esta aplicación móvil está diseñada para automatizar tareas logísticas, per
 
 #### Instalación:
 1. Clonar el repositorio en el entorno de desarrollo
-2. Ejecutar el comando `npm install` para instalar las dependencias de Node.js.
-3. Ejecutar el comando `cordova platform add android` para añadir la plataforma Android con Cordova.
-4. Ejecutar el comando `npm run build:android` para compilar el archivo APK.
+2. Cambiar al directorio "frontend" : `cd frontend`
+3. Ejecutar el comando `npm install` para instalar las dependencias de Node.js.
+4. Ejecutar el comando `cordova platform add android` para añadir la plataforma Android con Cordova.
+5. Ejecutar el comando `npm run build:android` para compilar el archivo APK.
 
 #### Uso:
 1. Copiar el archivo roxana.apk en un dispositivo android.

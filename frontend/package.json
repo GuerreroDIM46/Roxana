@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node postbuild.js && npm run copy-vite",
+    "build": "vite build && npm run postbuild && npm run copy-vite",
     "preview": "vite preview",
     "generate-icon-lpdi": "magick src/assets/logo_roxana.jpeg -resize 36x36 platforms/android/app/src/main/res/mipmap-ldpi/logo_roxana.png",
     "generate-icon-mpdi": "magick src/assets/logo_roxana.jpeg -resize 48x48 platforms/android/app/src/main/res/mipmap-mdpi/logo_roxana.png",
@@ -17,7 +17,10 @@
     "copy-vite": "cpy dist/**/* www/",
     "copy-app": "cpy \"platforms/android/app/build/outputs/apk/debug/app-debug.apk\" ../ --rename=roxana.apk --flat",
     "delete-output": "rimraf platforms/android/app/build/outputs/apk/debug/app-debug.apk",
-    "build:android": "npm run build && npm run generate-icons && cordova build android && npm run copy-app && npm run delete-output"
+    "fix-gradle": "node postbuild/fix-gradle.js",
+    "postbuild": "node postbuild/postbuild.js",
+    "cordova-build": "cordova build android",    
+    "build:android": "npm run build && npm run generate-icons && npm run fix-gradle && npm run cordova-build && npm run copy-app && npm run delete-output"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -32,6 +35,7 @@
     "cordova-android": "^13.0.0",
     "cpy-cli": "^5.0.0",
     "npm-run-all": "^4.1.5",
+    "phonegap-plugin-barcodescanner": "^8.1.0",
     "rimraf": "^6.0.1",
     "sass": "^1.79.4",
     "vite": "^5.4.1"
@@ -39,6 +43,11 @@
   "cordova": {
     "platforms": [
       "android"
-    ]
+    ],
+    "plugins": {
+      "phonegap-plugin-barcodescanner": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      }
+    }
   }
 }

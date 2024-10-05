@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.cordova.roxana" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="io.cordova.roxana" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Roxana</name>
     <description>Gestor modular de operaciones variadas</description>
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
@@ -15,5 +15,6 @@
         <icon src="platforms/android/app/src/main/res/mipmap-xhdpi/logo_roxana.png" density="xhdpi" />
         <icon src="platforms/android/app/src/main/res/mipmap-xxhdpi/logo_roxana.png" density="xxhdpi" />
         <icon src="platforms/android/app/src/main/res/mipmap-xxxhdpi/logo_roxana.png" density="xxxhdpi" />
+        <uses-permission android:name="android.permission.CAMERA" />
     </platform>
 </widget>
