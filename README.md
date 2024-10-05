@@ -36,7 +36,7 @@ Esta aplicación móvil está diseñada para automatizar tareas logísticas, per
 - Despliegue: [API](https://.../api)
 
 ### **Aplicación (.apk)**:
-- Puedes descargar la última versión del APK desde [aquí](https://github.com/usuario/repositorio/releases/download/v1.0/app.apk).
+- Puedes descargar la última versión del APK desde [aquí](/roxana.apk).
 
 ## **Contribuciones**
 Las contribuciones al proyecto son bienvenidas. Para realizar cambios, crear un fork del repositorio y enviar una solicitud de extracción.
