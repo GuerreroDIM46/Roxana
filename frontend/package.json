@@ -2,11 +2,22 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build && node postbuild.js && npm run copy-vite",
+    "preview": "vite preview",
+    "generate-icon-lpdi": "magick src/assets/logo_roxana.jpeg -resize 36x36 platforms/android/app/src/main/res/mipmap-ldpi/logo_roxana.png",
+    "generate-icon-mpdi": "magick src/assets/logo_roxana.jpeg -resize 48x48 platforms/android/app/src/main/res/mipmap-mdpi/logo_roxana.png",
+    "generate-icon-hdpi": "magick src/assets/logo_roxana.jpeg -resize 72x72 platforms/android/app/src/main/res/mipmap-hdpi/logo_roxana.png",
+    "generate-icon-xhdpi": "magick src/assets/logo_roxana.jpeg -resize 96x96 platforms/android/app/src/main/res/mipmap-xhdpi/logo_roxana.png",
+    "generate-icon-xxhdpi": "magick src/assets/logo_roxana.jpeg -resize 144x144 platforms/android/app/src/main/res/mipmap-xxhdpi/logo_roxana.png",
+    "generate-icon-xxxhdpi": "magick src/assets/logo_roxana.jpeg -resize 192x192 platforms/android/app/src/main/res/mipmap-xxxhdpi/logo_roxana.png",
+    "generate-icons": "npm-run-all --serial generate-icon-lpdi generate-icon-mpdi generate-icon-hdpi generate-icon-xhdpi generate-icon-xxhdpi generate-icon-xxxhdpi",
+    "copy-vite": "cpy dist/**/* www/",
+    "copy-app": "cpy \"platforms/android/app/build/outputs/apk/debug/app-debug.apk\" ../ --rename=roxana.apk --flat",
+    "delete-output": "rimraf platforms/android/app/build/outputs/apk/debug/app-debug.apk",
+    "build:android": "npm run build && npm run generate-icons && cordova build android && npm run copy-app && npm run delete-output"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -18,7 +29,16 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",
+    "cordova-android": "^13.0.0",
+    "cpy-cli": "^5.0.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^6.0.1",
     "sass": "^1.79.4",
     "vite": "^5.4.1"
+  },
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
   }
 }

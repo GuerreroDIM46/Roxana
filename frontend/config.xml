@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="io.cordova.roxana" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Roxana</name>
+    <description>Gestor modular de operaciones variadas</description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Roxana EIE Team
+    </author>
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <platform name="android">
+        <icon src="platforms/android/app/src/main/res/mipmap-ldpi/logo_roxana.png" density="ldpi" />
+        <icon src="platforms/android/app/src/main/res/mipmap-mdpi/logo_roxana.png" density="mdpi" />
+        <icon src="platforms/android/app/src/main/res/mipmap-hdpi/logo_roxana.png" density="hdpi" />
+        <icon src="platforms/android/app/src/main/res/mipmap-xhdpi/logo_roxana.png" density="xhdpi" />
+        <icon src="platforms/android/app/src/main/res/mipmap-xxhdpi/logo_roxana.png" density="xxhdpi" />
+        <icon src="platforms/android/app/src/main/res/mipmap-xxxhdpi/logo_roxana.png" density="xxxhdpi" />
+    </platform>
+</widget>

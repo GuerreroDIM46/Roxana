@@ -9,22 +9,24 @@ Esta aplicación móvil está diseñada para automatizar tareas logísticas, per
 - **Personalización de la presentación**: La API proporciona los datos de presentación, permitiendo personalizar cómo se muestran los listados y artículos en la interfaz.
 - **Constructor de pantallas**: Permite configurar las pantallas según las necesidades del usuario y la naturaleza de los listados.
 
-## **Requisitos del sistema**
-- Dispositivo Android.
-- Conexión a una API externa que gestione la lógica de negocio y la presentación de datos.
-- Dependencias: **Vue.js** y **Cordova** para el desarrollo móvil nativo.
+## **Instrucciones de compilacion APK**
+#### Esta aplicación ha sido compilado en un equipo con Windows 10 y las siguientes dependencias instaladas:
+1. **Node.js (v20.11.1) y npm (v10.8.1)** Descarga en: [nodejs.org](https://nodejs.org/).
+2. **Cordova (v12.0.0)**: Se puede instalar cor `npm install -g cordova`
+3. **Gradle (v8.1)**: Descarga en:  [gradle.org](https://gradle.org/install/)
+4. **JVM (Java Development Kit, v17.0.10)**: Descarga en: [Oracle](https://www.oracle.com/java/technologies/javase-downloads.html)
+5. **ImageMagick (v7.1.1-38)**:  Descarga en: [ImageMagick](https://imagemagick.org/script/download.php#windows)
 
-## **Instalación**
-1. Clonar el repositorio en el entorno de desarrollo.
-2. Ejecutar el comando `npm install` para instalar las dependencias.
-3. Para compilar la aplicación para dispositivos móviles, utilizar Cordova con `cordova build android`.
-4. Desplegar la aplicación en el dispositivo móvil.
+#### Instalación:
+1. Clonar el repositorio en el entorno de desarrollo
+2. Ejecutar el comando `npm install` para instalar las dependencias de Node.js.
+3. Ejecutar el comando `cordova platform add android` para añadir la plataforma Android con Cordova.
+4. Ejecutar el comando `npm run build:android` para compilar el archivo APK.
 
-## **Uso**
-1. Iniciar sesión en la aplicación.
-2. Descargar listados de artículos desde la API.
-3. Validar los artículos mediante el lector de códigos de barras.
-4. Sincronizar los listados validados una vez que la conexión esté disponible.
+#### Uso:
+1. Copiar el archivo roxana.apk en un dispositivo android.
+2. Obtener todos los permisos necesarios para instalar aplicaciones de fuentes desconocidas.
+3. Instalar y arrancar.
 
 ## **Despliegue en Internet**
 
