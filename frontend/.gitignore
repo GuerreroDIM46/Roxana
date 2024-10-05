@@ -9,7 +9,7 @@ lerna-debug.log*
 !www/.gitkeep
 platforms/
 plugins/
-www/
+
 
 node_modules
 dist
