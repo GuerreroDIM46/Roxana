@@ -34,11 +34,6 @@ export default {
             this.setConexionLista(online);
         },
     },
-    watch: {
-        conexionLista(newValue) {
-            console.log('Nuevo estado de conexión:', newValue);
-        }
-    },
     mounted() {
         this.checkNetworkStatus(); // Comprobar el estado inicial de la red
 

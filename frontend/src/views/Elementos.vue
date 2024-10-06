@@ -1,13 +1,18 @@
 <script>
 import { mapState } from 'pinia';
 import { useCombinedStore } from '@/storage/combinedStore';
-import { hateoasMixin } from '@/mixins/hateoasMixin'; // Importar el mixin
+import { hateoasMixin } from '@/mixins/hateoasMixin';
+import Escaner from '@/components/Escaner.vue'; // Importar el componente de escaneo
 
 export default {
-    mixins: [hateoasMixin], // Usar el mixin
+    components: {
+        Escaner, // Usar el componente de escaneo
+    },
+    mixins: [hateoasMixin],
     data() {
         return {
-            elementosFiltrados: [], // Almacenará los elementos filtrados por listado seleccionado
+            elementosFiltrados: [], // Almacenar los elementos filtrados por listado seleccionado
+            codigoEscaneado: null,  // Almacenar el código escaneado
         };
     },
     computed: {
@@ -15,25 +20,49 @@ export default {
     },
     methods: {
         filtrarElementos() {
-            // Filtrar los elementos según el listado seleccionado en Pinia
             if (this.listadoSeleccionado) {
-                const listadoIdSeleccionado = this.listadoSeleccionado.id; // Obtener el ID del listado seleccionado
+                const listadoIdSeleccionado = this.listadoSeleccionado.id;
                 console.log("ID del listado seleccionado:", listadoIdSeleccionado);
 
-                // Filtrar los elementos utilizando listadoId
                 this.elementosFiltrados = this.elementos.filter(elemento => {
-                    return elemento.listadoId == listadoIdSeleccionado; // Comparar listadoId
+                    return elemento.listadoId == listadoIdSeleccionado;
                 });
 
-                console.log("Elementos filtrados:", this.elementosFiltrados); // Depuración
+                console.log("Elementos filtrados:", this.elementosFiltrados);
             }
         },
         volver() {
-            this.$router.go(-1); // Volver a la pantalla anterior
+            this.$router.push({ name: 'Listados' })
+        },
+        // Lógica de escaneo
+        siEscaneado(codigo) {
+            this.codigoEscaneado = codigo; // Guardar el código escaneado
+            const elementoEncontrado = this.elementosFiltrados.find(elemento => elemento.barcode === codigo);
+
+            if (elementoEncontrado) {
+                elementoEncontrado.estado = '200'; // Actualizar estado a recepcionado
+                elementoEncontrado.flag = 'modificado'; // Marcar como modificado
+                console.log("Elemento actualizado:", elementoEncontrado);
+            } else {
+                alert("No se encontró ningún elemento con ese código de barras.");
+            }
+        },
+        // Guardar los elementos modificados en Dexie
+        async guardarCambios() {
+            try {
+                const db = await import('@/storage/dexieDBConfig'); // Importar Dexie dinámicamente
+                const elementosModificados = this.elementosFiltrados.filter(elemento => elemento.flag === 'modificado');
+                for (const elemento of elementosModificados) {
+                    await db.elementos.put(elemento); // Guardar en Dexie
+                }
+                alert('Cambios guardados correctamente.');
+            } catch (error) {
+                console.error('Error al guardar los cambios en Dexie:', error);
+            }
         },
     },
     mounted() {
-        this.filtrarElementos(); // Filtrar elementos al montar el componente
+        this.filtrarElementos();
     }
 };
 </script>
@@ -44,30 +73,59 @@ export default {
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3>{{ listadoSeleccionado ? listadoSeleccionado.nombre : 'Listado no encontrado' }}</h3>
             <button class="custom-btn h-20" @click="volver">
-                <i class="pi pi-arrow-left"></i> Volver
+                <div>
+                    <i class="pi pi-arrow-left"></i>
+                    <span>Volver</span> 
+                </div>
             </button>
         </div>
 
         <!-- Mostrar los elementos filtrados si el listado existe -->
-        <!-- Mostrar los elementos filtrados si el listado existe -->
         <ul v-if="elementosFiltrados && elementosFiltrados.length > 0" class="list-group list-group-flush">
             <li v-for="elemento in elementosFiltrados" :key="elemento.id" class="list-group-item d-flex justify-content-between align-items-center border-bottom">
-                <!-- Nombre del elemento alineado a la izquierda y en negrita -->
                 <span class="fw-bold">{{ elemento.nombre }}</span>
-
-                <!-- Icono de thumbs-down si el estado es 100 -->
                 <i v-if="elemento.estado === '100'" class="pi pi-thumbs-down-fill text-primary"></i>
-
-                <!-- Badge basado en el estado del elemento -->
                 <span v-else-if="elemento.estado === '200'" class="badge bg-success">Recepcionado</span>
             </li>
         </ul>
+
         <div v-else>
             <p>No se encontraron elementos para este listado o el listado no está seleccionado.</p>
+        </div>
+
+        <!-- Botones Escanear y Guardar -->
+        <div class="sticky-footer d-flex justify-content-between">
+            <button class="custom-btn h-20" @click="escanearCodigo">
+                <div>
+                    <i class="pi pi-search me-1"></i>
+                    <span>Escanear</span>
+                </div>
+            </button>
+
+            <button class="custom-btn h-20" @click="guardarCambios">
+                <div>
+                <i class="pi pi-save me-1"></i>
+                <span>Guardar</span>
+                </div>
+            </button>
         </div>
     </div>
 </template>
 
+
 <style scoped>
-/* Estilos adicionales si es necesario */
+.sticky-footer {
+    position: fixed;
+    bottom: 60px; /* Altura del footer Estado de Conexión */
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    padding: 10px;
+    z-index: 100;
+    border-top: 1px solid #ccc;
+}
+
+.sticky-footer button {
+    flex-grow: 1;
+}
 </style>
