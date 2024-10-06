@@ -118,6 +118,8 @@ export const useCombinedStore = defineStore('CombinedStore', {
         
                 // Borrar todos los listados de la tabla 'listados'
                 await db.listados.clear();
+                this.listados = []
+                this.elementos = []
                 console.log('✅ Todos los listados han sido borrados de la base de datos local.');
             } catch (error) {
                 console.error('❌ Error al borrar la base de datos local:', error);
