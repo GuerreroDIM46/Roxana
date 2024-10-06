@@ -93,22 +93,36 @@ export const useCombinedStore = defineStore('CombinedStore', {
         },
         async guardarEnLocal() {
             try {
-                // Filtrar los elementos modificados o creados
-                const elementosModificados = this.elementos.filter(elemento => elemento.flag === 'modificado' || elemento.flag === 'creado');
-        
+                // Filtrar los elementos que han sido modificados o creados
+                const elementosModificados = this.elementos.filter(elemento => elemento.flag == 'modificado' || elemento.flag == 'creado');
+                
                 if (elementosModificados.length > 0) {
-                    // Guardar cada elemento modificado/creado en Dexie
+                    // Guardar los elementos modificados o creados en Dexie
                     for (const elemento of elementosModificados) {
-                        await db.elementos.put(elemento);
+                        const elementoPlano = JSON.parse(JSON.stringify(elemento)); // Eliminar reactividad (Vue Proxy)
+                        await db.elementos.put(elementoPlano); // Guardar en Dexie
                     }
-                    console.log('✅ Elementos modificados o creados guardados en Dexie:', elementosModificados);
+                    console.log('Elementos modificados o creados guardados en Dexie:', elementosModificados);
                 } else {
-                    console.log('ℹ️ No hay elementos modificados o creados para guardar en Dexie.');
+                    console.log('No hay elementos modificados o creados para guardar en Dexie.');
                 }
             } catch (error) {
                 console.error('❌ Error al guardar los elementos modificados o creados en Dexie:', error);
             }
-        },        
+        },
+        async borrarBaseDeDatosLocal() {
+            try {
+                // Borrar todos los elementos de la tabla 'elementos'
+                await db.elementos.clear();
+                console.log('✅ Todos los elementos han sido borrados de la base de datos local.');
+        
+                // Borrar todos los listados de la tabla 'listados'
+                await db.listados.clear();
+                console.log('✅ Todos los listados han sido borrados de la base de datos local.');
+            } catch (error) {
+                console.error('❌ Error al borrar la base de datos local:', error);
+            }
+        },
         async sincronizarElementos() {
             const elementosModificados = await db.elementos.where('flag').anyOf('modificado', 'creado').toArray()
             for (const elemento of elementosModificados) {

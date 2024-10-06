@@ -6,13 +6,21 @@ export default {
     data() {
         return {
             cargandoElementos: false,
+            sincronizando: false,
         };
     },
     computed: {
         ...mapState(useCombinedStore, ['listados', 'elementos', 'alertaSobreescritura', 'conexionLista']),
     },
     methods: {
-        ...mapActions(useCombinedStore, ['cargarListados', 'cargarElementos', 'seleccionarListado']),
+        ...mapActions(useCombinedStore, [
+            'cargarListados',
+            'cargarElementos', 
+            'seleccionarListado', 
+            'sincronizarElementos', 
+            'sincronizarListados',
+            'borrarBaseDeDatosLocal'
+        ]),
 
         // Método para seleccionar un listado y mostrar los elementos
         mostrarElementos(listado) {
@@ -27,21 +35,23 @@ export default {
                 console.error('Error al cargar listados y elementos', error);
             }
         },
-        async sincronizarOps() {
+        async sincronizarOperaciones() {
             this.sincronizando = true; // Activar el estado de sincronización
             try {
                 console.log("Sincronizando operaciones...");
-                await this.sincronizarElementos(); // Llamar a la función que sincroniza con la API
+                await this.sincronizarElementos();
+                await this.sincronizarListados();
                 console.log("Sincronización completada.");
+
+                // Mostrar alerta de éxito
+                alert('Sincronización completada con éxito.');
             } catch (error) {
                 console.error('Error al sincronizar operaciones:', error);
+                alert('Hubo un error al sincronizar las operaciones.');
             } finally {
                 this.sincronizando = false; // Desactivar el estado de sincronización
             }
-        },
-    },
-    async mounted() {
-        await this.cargarListadosYElementos();
+        }
     },
 };
 </script>
@@ -63,7 +73,7 @@ export default {
 
             <!-- Botón 2: Sincronizar Operaciones -->
             <div class="col-6 col-md-6">
-                <button class="custom-btn w-100" @click="sincronizarOps" :disabled="!conexionLista || sincronizando">
+                <button class="custom-btn w-100" @click="sincronizarOperaciones" :disabled="!conexionLista || sincronizando">
                     <div class="icon-group">
                         <i class="pi pi-sync me-1" style="font-size: 36px;"></i>
                         <i class="pi pi-arrow-up" style="font-size: 36px;"></i>
@@ -72,11 +82,34 @@ export default {
                     <div v-else><i class="pi pi-spin pi-spinner"></i> Sincronizando...</div>
                 </button>
             </div>
+
+            <!-- Botón 3: Descartar Operaciones -->
+            <div class="col-6 col-md-6 mt-4">
+                <button class="custom-btn w-100" @click="borrarBaseDeDatosLocal">
+                    <div class="icon-group">
+                        <i class="pi pi-trash me-1" style="font-size: 36px;"></i>
+                    </div>
+                    <div>Descartar Ops</div>
+                </button>
+            </div>
+
+            
+            <!-- Botón 4: Generacion de listados -->
+            <div class="col-6 col-md-6 mt-4">
+                <button class="custom-btn w-100" >
+                    <div class="icon-group">
+                        <i class="pi pi-file-plus me-1" style="font-size: 36px;"></i>
+                    </div>
+                    <div>Generar</div>
+                </button>
+            </div>
+
+            
         </div>
     </div>
 
     <!-- Mostrar Listados descargados -->
-    <div class="container px-4 mt-5">
+    <div class="container px-4 mt-1">
         <div class="row mt-4">
             <div class="col-12">
                 <h3>Listados Disponibles</h3>

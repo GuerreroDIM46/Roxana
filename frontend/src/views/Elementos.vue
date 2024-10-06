@@ -51,7 +51,18 @@ export default {
         },
         // Guardar los elementos modificados en Dexie
         async guardarCambios() {
-            await this.guardarEnLocal(); // Llamar la acción de Pinia para guardar en local
+            try {
+                await this.guardarEnLocal(); // Llamar la acción de Pinia para guardar en local
+
+                // Mostrar alerta de éxito
+                alert('Cambios guardados con éxito.');
+
+                // Volver a la página de Listados
+                this.volver();
+            } catch (error) {
+                console.error('Error al guardar los cambios:', error);
+                alert('Hubo un error al guardar los cambios.');
+            }
         }
     },
     mounted() {
