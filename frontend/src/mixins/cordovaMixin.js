@@ -1,6 +1,6 @@
 import { useCombinedStore } from '@/storage/combinedStore'
 
-export const CordovaMixin = {
+export const cordovaMixin = {
     computed: {
         cordovaListo() {
             return this.$store.cordovaListo
