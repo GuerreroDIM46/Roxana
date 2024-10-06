@@ -19,7 +19,7 @@
     "delete-output": "rimraf platforms/android/app/build/outputs/apk/debug/app-debug.apk",
     "fix-gradle": "node postbuild/fix-gradle.js",
     "postbuild": "node postbuild/postbuild.js",
-    "cordova-build": "cordova build android",
+    "cordova-build": "cordova clean && cordova build android",
     "build:android": "npm run build && npm run generate-icons && npm run fix-gradle && npm run cordova-build && npm run copy-app && npm run delete-output"
   },
   "dependencies": {

@@ -15,7 +15,7 @@ export const useCombinedStore = defineStore('CombinedStore', {
     actions: {
         // Verificar si hay elementos o listados modificados
         setConexionLista(estado) {
-            this.estadoConexion = estado
+            this.conexionLista = estado
         },
         setCordovaListo(estado) {
             this.cordovaListo = estado

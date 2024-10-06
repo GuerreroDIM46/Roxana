@@ -3,7 +3,8 @@ import { useCombinedStore } from '@/storage/combinedStore'
 export const cordovaMixin = {
     computed: {
         cordovaListo() {
-            return this.$store.cordovaListo
+            const store = useCombinedStore()
+            return store.cordovaListo
         },
     },
     methods: {

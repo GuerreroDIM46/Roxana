@@ -6,7 +6,7 @@ import { cordovaMixin } from '@/mixins/cordovaMixin';
 export default {
     mixins: [cordovaMixin],
     computed: {
-        ...mapState(useCombinedStore, ['conexionLista', 'cordovaListo']), // Accede al estado de cordovaListo
+        ...mapState(useCombinedStore, ['conexionLista', 'cordovaListo']),
     },
     methods: {
         ...mapActions(useCombinedStore, ['setConexionLista']),
@@ -19,6 +19,7 @@ export default {
             if (navigator.connection) {
                 const networkState = navigator.connection.type;
                 const online = networkState !== Connection.NONE;
+                console.log(`Actualizando conexión a: ${online ? 'Online' : 'Offline'}`);
                 this.setConexionLista(online);
             }
         },
@@ -29,11 +30,18 @@ export default {
             }
 
             const online = navigator.onLine;
+            console.log(`Actualizando conexión a: ${online ? 'Online' : 'Offline'}`);
             this.setConexionLista(online);
         },
     },
+    watch: {
+        conexionLista(newValue) {
+            console.log('Nuevo estado de conexión:', newValue);
+        }
+    },
     mounted() {
-        this.checkNetworkStatus();
+        this.checkNetworkStatus(); // Comprobar el estado inicial de la red
+
         document.addEventListener('offline', this.updateNetworkStatus, false);
         document.addEventListener('online', this.updateNetworkStatus, false);
     },
@@ -58,5 +66,3 @@ export default {
         </div>
     </footer>
 </template>
-
-
