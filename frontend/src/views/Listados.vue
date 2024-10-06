@@ -51,6 +51,18 @@ export default {
             } finally {
                 this.sincronizando = false; // Desactivar el estado de sincronización
             }
+        },
+        borrarBaseDeDatos() {
+            const confirmacion = confirm("¿Estás seguro de que deseas borrar todos los datos locales? Esta acción no se puede deshacer.");
+            
+            if (confirmacion) {
+                // Si el usuario confirma, borra la base de datos
+                this.borrarBaseDeDatosLocal();
+                alert("Base de datos local borrada con éxito.");
+            } else {
+                // Si el usuario cancela, no se hace nada
+                console.log("Acción de borrado cancelada.");
+            }
         }
     },
 };
@@ -85,7 +97,7 @@ export default {
 
             <!-- Botón 3: Descartar Operaciones -->
             <div class="col-6 col-md-6 mt-4">
-                <button class="custom-btn w-100" @click="borrarBaseDeDatosLocal">
+                <button class="custom-btn w-100" @click="borrarBaseDeDatos">
                     <div class="icon-group">
                         <i class="pi pi-trash me-1" style="font-size: 36px;"></i>
                     </div>
