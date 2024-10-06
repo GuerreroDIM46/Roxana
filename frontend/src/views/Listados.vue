@@ -9,7 +9,7 @@ export default {
         };
     },
     computed: {
-        ...mapState(useCombinedStore, ['listados', 'elementos', 'alertaSobreescritura', 'estadoConexion']),
+        ...mapState(useCombinedStore, ['listados', 'elementos', 'alertaSobreescritura', 'conexionLista']),
     },
     methods: {
         ...mapActions(useCombinedStore, ['cargarListados', 'cargarElementos', 'seleccionarListado']),
@@ -52,7 +52,7 @@ export default {
 
             <!-- Botón 2: Sincronizar Operaciones -->
             <div class="col-6 col-md-6">
-                <button class="custom-btn w-100" :disabled="!estadoConexion">
+                <button class="custom-btn w-100" :disabled="!conexionLista">
                     <div class="icon-group">
                         <i class="pi pi-sync me-1" style="font-size: 36px;"></i>
                         <i class="pi pi-arrow-up" style="font-size: 36px;"></i>

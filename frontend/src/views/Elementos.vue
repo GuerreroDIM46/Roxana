@@ -43,7 +43,7 @@ export default {
         <!-- Encabezado con el nombre del listado y botón de volver -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3>{{ listadoSeleccionado ? listadoSeleccionado.nombre : 'Listado no encontrado' }}</h3>
-            <button class="btn btn-primary" @click="volver">
+            <button class="custom-btn h-20" @click="volver">
                 <i class="pi pi-arrow-left"></i> Volver
             </button>
         </div>

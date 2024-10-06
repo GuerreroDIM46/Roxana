@@ -7,14 +7,14 @@ export const useCombinedStore = defineStore('CombinedStore', {
     state: () => ({
         listados: [],
         elementos: [],
-        estadoConexion: true, // Estado inicial de la conexión
+        conexionLista: true, // Estado inicial de la conexión
         cordovaListo: false, // Estado inicial de la de cordiva
         alertaSobreescritura: null, // Nueva variable para manejar la alerta
         listadoSeleccionado: null,
     }),
     actions: {
         // Verificar si hay elementos o listados modificados
-        setEstadoConexion(estado) {
+        setConexionLista(estado) {
             this.estadoConexion = estado
         },
         setCordovaListo(estado) {
