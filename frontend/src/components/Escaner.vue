@@ -35,8 +35,11 @@ export default {
 
 <template>
     <div>
-        <button type="button" class="custom-btn" @click="escanear" :disabled="!cordovaListo">
-            Escanear Código de Barras
+        <button type="button" class="custom-btn h-20" @click="escanear" :disabled="!cordovaListo">
+            <div>
+                <i class="pi pi-search me-1"></i>
+                <span>Escanear</span>
+            </div>
         </button>
         <p v-if="!cordovaListo" style="color: red">Cordova no está listo aún</p>
     </div>

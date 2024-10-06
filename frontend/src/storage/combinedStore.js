@@ -1,19 +1,18 @@
-// stores/listadoStore.js
-import { defineStore } from 'pinia';
-import { db } from '@/storage/dexieDBConfig'; // Importar la base de datos Dexie
-import { getListados, getElementos, postElemento, patchElemento, postListado } from '@/storage/LlamadasAPI'; // Importar las llamadas centralizadas
+
+import { defineStore } from 'pinia'
+import { db } from '@/storage/dexieDBConfig'
+import { getListados, getElementos, postElemento, patchElemento, postListado } from '@/storage/LlamadasAPI'
 
 export const useCombinedStore = defineStore('CombinedStore', {
     state: () => ({
         listados: [],
         elementos: [],
-        conexionLista: true, // Estado inicial de la conexión
-        cordovaListo: false, // Estado inicial de la de cordiva
-        alertaSobreescritura: null, // Nueva variable para manejar la alerta
+        conexionLista: true, 
+        cordovaListo: false, 
+        alertaSobreescritura: null, 
         listadoSeleccionado: null,
     }),
-    actions: {
-        // Verificar si hay elementos o listados modificados
+    actions: {        
         setConexionLista(estado) {
             this.conexionLista = estado
         },
@@ -21,171 +20,130 @@ export const useCombinedStore = defineStore('CombinedStore', {
             this.cordovaListo = estado
         },
         seleccionarListado(listado) {
-            this.listadoSeleccionado = listado; // Guardar el listado seleccionado en Pinia
-        },
-        // Cargar listados desde la API y guardarlos en DexieDB
-        async cargarListados() {
-            // Verificar si hay elementos o listados modificados antes de continuar
+            this.listadoSeleccionado = listado
+        },        
+        async cargarListados() {            
             const puedeContinuar = await this.verificarElementosModificados()
             if (!puedeContinuar) {
                 console.warn('Operación interrumpida debido a alerta de sobreescritura')
-                return; // Interrumpir la operación
+                return
             }
-
             try {
                 const response = await getListados()
                 // Usar map para agregar el flag null a cada listado
                 const listados = response.data._embedded.listados.map(listado => ({
                     ...listado,
                     flag: null // Agregar el flag "null" para indicar que no se ha modificado localmente
-                }));
-                console.log("listados:", listados )
-                // Guardar los listados en DexieDB
+                }))
+                console.log("listados:", listados )                
                 await db.listados.bulkPut(listados)
-
-                // Actualizar el estado de listados en Pinia
                 this.listados = listados
-
             } catch (error) {
                 console.error('Error al cargar los listados desde la API', error)
-
-                // Si falla la API, intentar cargar los listados desde DexieDB
                 const listadosLocales = await db.listados.toArray()
                 this.listados = listadosLocales;
             }
         },
-
-        // Cargar elementos por listado desde la API y guardarlos en DexieDB
         async cargarElementos() {
-            // Verificar si hay elementos o listados modificados antes de continuar
             const puedeContinuar = await this.verificarElementosModificados()
             if (!puedeContinuar) {
-                console.warn('Operación interrumpida debido a alerta de sobreescritura');
-                return; // Interrumpir la operación
+                console.warn('Operación interrumpida debido a alerta de sobreescritura')
+                return
             }
-
             try {
                 const response = await await getElementos()
-                // Usar map para agregar el flag null a cada elemento
                 const elementos = response.data._embedded.elementos.map(elemento => ({
                     ...elemento,
-                    flag: null // Agregar el flag "null" para indicar que no se ha modificado localmente
+                    flag: null 
                 }))
                 console.log("elementos:", elementos )
-                // Guardar los elementos en DexieDB
                 await db.elementos.bulkPut(elementos)
-
-                // Actualizar el estado de elementos en Pinia
                 this.elementos = elementos
             } catch (error) {
                 console.error('Error al cargar los elementos desde la API', error)
-
-                // Si falla la API, intentar cargar los elementos desde DexieDB
                 const elementosLocales = await db.elementos.where('listadoId').equals(listadoId).toArray()
-                this.elementos = elementosLocales;
+                this.elementos = elementosLocales
             }
         },
         async verificarElementosModificados() {
             try {
-                // Solo proceder si alertaSobreescritura no es "ignorar"
                 if (this.alertaSobreescritura !== 'ignorar') {
-                    // Contar elementos en DexieDB con flags "creado" o "modificado"
                     const countElementosModificados = await db.elementos
                         .where('flag')
                         .anyOf('creado', 'modificado')
                         .count()
-        
-                    // Contar listados en DexieDB con flags "creado" o "modificado"
                     const countListadosModificados = await db.listados
                         .where('flag')
                         .anyOf('creado', 'modificado')
                         .count()
-        
-                    // Si hay elementos o listados modificados o creados, actualizar alertaSobreescritura
                     if ((countElementosModificados + countListadosModificados) > 0) {
-                        this.alertaSobreescritura = 'notificar' // Cambiar el valor de alerta
-                        return false // Interrumpir la operación
+                        this.alertaSobreescritura = 'notificar'
+                        return false
                     } else {
-                        this.alertaSobreescritura = null // Si no hay modificaciones, resetear la alerta
+                        this.alertaSobreescritura = null 
                     }
                 } else {
-                    console.log('Alerta de sobreescritura está en modo "ignorar". No se actualiza.');
-                }
-        
-                return true // Continuar si no hay elementos modificados o si se ignora la alerta
+                    console.log('Alerta de sobreescritura está en modo "ignorar". No se actualiza.')
+                }        
+                return true
             } catch (error) {
-                console.error('Error al verificar elementos y listados modificados en Dexie', error);
+                console.error('Error al verificar elementos y listados modificados en Dexie', error)
                 return false
             }
         },
+        async guardarEnLocal() {
+            try {
+                // Filtrar los elementos modificados o creados
+                const elementosModificados = this.elementos.filter(elemento => elemento.flag === 'modificado' || elemento.flag === 'creado');
         
-
-
-        // Sincronizar elementos modificados o creados localmente con la API
+                if (elementosModificados.length > 0) {
+                    // Guardar cada elemento modificado/creado en Dexie
+                    for (const elemento of elementosModificados) {
+                        await db.elementos.put(elemento);
+                    }
+                    console.log('✅ Elementos modificados o creados guardados en Dexie:', elementosModificados);
+                } else {
+                    console.log('ℹ️ No hay elementos modificados o creados para guardar en Dexie.');
+                }
+            } catch (error) {
+                console.error('❌ Error al guardar los elementos modificados o creados en Dexie:', error);
+            }
+        },        
         async sincronizarElementos() {
-            // Obtener elementos con flag "modificado" o "creado"
-            const elementosModificados = await db.elementos.where('flag').anyOf('modificado', 'creado').toArray();
-
+            const elementosModificados = await db.elementos.where('flag').anyOf('modificado', 'creado').toArray()
             for (const elemento of elementosModificados) {
-                // Eliminar la propiedad `flag` antes de enviar a la API
-                const { flag, ...elementoSinFlag } = elemento;
-
-                let response;
-
-                // Realizar la sincronización según el flag
-                if (flag === 'creado') {
-                    response = await postElemento(elementoSinFlag);
-                } else if (flag === 'modificado') {
-                    response = await patchElemento(elementoSinFlag);
+                const { flag, ...elementoSinFlag } = elemento
+                let response
+                if (flag == 'creado') {
+                    response = await postElemento(elementoSinFlag)
+                } else if (flag == 'modificado') {
+                    response = await patchElemento(elementoSinFlag)
                 }
-
-                // Comprobar la respuesta de la API: si el estado es 2xx (sin errores), eliminar el elemento de DexieDB
-                if (response.status >= 200 && response.status < 300) {
-                    // Eliminar el elemento de DexieDB
-                    await db.elementos.delete(elemento.id);
+                if (response.status >= 200 && response.status < 300) {                    
+                    await db.elementos.delete(elemento.id)
                 }
             }
         },
-
-        // Sincronizar los listados que tienen el flag "creado"
         async sincronizarListados() {
-            // Obtener listados con el flag "creado"
-            const listadosCreados = await db.listados.where('flag').equals('creado').toArray();
-
+            const listadosCreados = await db.listados.where('flag').equals('creado').toArray()
             for (const listado of listadosCreados) {
-                // Eliminar el flag antes de enviar a la API
-                const { flag, ...listadoSinFlag } = listado;
-
-                // Enviar el POST a la API
-                const response = await postListado(listadoSinFlag);
-
-                // Comprobar si la respuesta fue exitosa (código de estado 2xx)
+                const { flag, ...listadoSinFlag } = listado
+                const response = await postListado(listadoSinFlag)
                 if (response.status >= 200 && response.status < 300) {
-                    // Eliminar el listado de DexieDB
-                    await db.listados.delete(listado.id);
+                    await db.listados.delete(listado.id)
                 }
             }
         },
-
-        // Crear un nuevo listado localmente con el flag "creado"
         async crearListado() {
-            // Obtener el número de listados existentes para generar un nombre único
             const listadosLocales = await db.listados.toArray();
-            const nuevoNombre = `nuevolistado${listadosLocales.length + 1}`;
-
-            // Crear el objeto del nuevo listado con el flag "creado" y tipo "inventario"
+            const nuevoNombre = `nuevolistado${listadosLocales.length + 1}`
             const nuevoListado = {
                 nombre: nuevoNombre,
                 tipo: 'inventario',
                 flag: 'creado'
-            };
-
-            // Guardar el nuevo listado en DexieDB
-            await db.listados.add(nuevoListado);
-
-            // Actualizar el estado de listados en Pinia
-            this.listados.push(nuevoListado);
-        },
-        
+            }
+            await db.listados.add(nuevoListado)
+            this.listados.push(nuevoListado)
+        },        
     }
-});
+})

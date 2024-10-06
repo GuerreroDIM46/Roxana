@@ -19,13 +19,24 @@ export default {
             this.seleccionarListado(listado); // Guardar el listado seleccionado en Pinia
             this.$router.push({ name: 'Elementos' }); // Navegar a la página de elementos
         },
-
         async cargarListadosYElementos() {
             try {
                 await this.cargarListados();
                 await this.cargarElementos();
             } catch (error) {
                 console.error('Error al cargar listados y elementos', error);
+            }
+        },
+        async sincronizarOps() {
+            this.sincronizando = true; // Activar el estado de sincronización
+            try {
+                console.log("Sincronizando operaciones...");
+                await this.sincronizarElementos(); // Llamar a la función que sincroniza con la API
+                console.log("Sincronización completada.");
+            } catch (error) {
+                console.error('Error al sincronizar operaciones:', error);
+            } finally {
+                this.sincronizando = false; // Desactivar el estado de sincronización
             }
         },
     },
@@ -52,12 +63,13 @@ export default {
 
             <!-- Botón 2: Sincronizar Operaciones -->
             <div class="col-6 col-md-6">
-                <button class="custom-btn w-100" :disabled="!conexionLista">
+                <button class="custom-btn w-100" @click="sincronizarOps" :disabled="!conexionLista || sincronizando">
                     <div class="icon-group">
                         <i class="pi pi-sync me-1" style="font-size: 36px;"></i>
                         <i class="pi pi-arrow-up" style="font-size: 36px;"></i>
                     </div>
-                    <div>Sincronizar Ops</div>
+                    <div v-if="!sincronizando">Sincronizar Ops</div>
+                    <div v-else><i class="pi pi-spin pi-spinner"></i> Sincronizando...</div>
                 </button>
             </div>
         </div>

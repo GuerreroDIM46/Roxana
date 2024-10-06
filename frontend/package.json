@@ -19,8 +19,9 @@
     "delete-output": "rimraf platforms/android/app/build/outputs/apk/debug/app-debug.apk",
     "fix-gradle": "node postbuild/fix-gradle.js",
     "postbuild": "node postbuild/postbuild.js",
+    "bump-version": "node postbuild/bump-version.js",
     "cordova-build": "cordova clean && cordova build android",
-    "build:android": "npm run build && npm run generate-icons && npm run fix-gradle && npm run cordova-build && npm run copy-app && npm run delete-output"
+    "build:android": "npm run build && npm run generate-icons && npm run fix-gradle && npm run bump-version && npm run cordova-build && npm run copy-app && npm run delete-output"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
@@ -30,7 +31,8 @@
     "pinia": "^2.2.4",
     "primeicons": "^7.0.0",
     "vue": "^3.4.37",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.4.5",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",

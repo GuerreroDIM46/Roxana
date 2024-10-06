@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { useCombinedStore } from '@/storage/combinedStore';
 import { hateoasMixin } from '@/mixins/hateoasMixin';
 import Escaner from '@/components/Escaner.vue'; // Importar el componente de escaneo
@@ -19,6 +19,7 @@ export default {
         ...mapState(useCombinedStore, ['listadoSeleccionado', 'elementos']),
     },
     methods: {
+        ...mapActions(useCombinedStore, ['guardarEnLocal']),
         filtrarElementos() {
             if (this.listadoSeleccionado) {
                 const listadoIdSeleccionado = this.listadoSeleccionado.id;
@@ -37,7 +38,8 @@ export default {
         // Lógica de escaneo
         siEscaneado(codigo) {
             this.codigoEscaneado = codigo; // Guardar el código escaneado
-            const elementoEncontrado = this.elementosFiltrados.find(elemento => elemento.barcode === codigo);
+            console.log("Código escaneado:", this.codigoEscaneado)
+            const elementoEncontrado = this.elementosFiltrados.find(elemento => elemento.barcode == this.codigoEscaneado);
 
             if (elementoEncontrado) {
                 elementoEncontrado.estado = '200'; // Actualizar estado a recepcionado
@@ -49,17 +51,8 @@ export default {
         },
         // Guardar los elementos modificados en Dexie
         async guardarCambios() {
-            try {
-                const db = await import('@/storage/dexieDBConfig'); // Importar Dexie dinámicamente
-                const elementosModificados = this.elementosFiltrados.filter(elemento => elemento.flag === 'modificado');
-                for (const elemento of elementosModificados) {
-                    await db.elementos.put(elemento); // Guardar en Dexie
-                }
-                alert('Cambios guardados correctamente.');
-            } catch (error) {
-                console.error('Error al guardar los cambios en Dexie:', error);
-            }
-        },
+            await this.guardarEnLocal(); // Llamar la acción de Pinia para guardar en local
+        }
     },
     mounted() {
         this.filtrarElementos();
@@ -75,7 +68,7 @@ export default {
             <button class="custom-btn h-20" @click="volver">
                 <div>
                     <i class="pi pi-arrow-left"></i>
-                    <span>Volver</span> 
+                    <span> Volver</span> 
                 </div>
             </button>
         </div>
@@ -95,13 +88,7 @@ export default {
 
         <!-- Botones Escanear y Guardar -->
         <div class="sticky-footer d-flex justify-content-between">
-            <button class="custom-btn h-20" @click="escanearCodigo">
-                <div>
-                    <i class="pi pi-search me-1"></i>
-                    <span>Escanear</span>
-                </div>
-            </button>
-
+            <Escaner @codigoEscaneado="siEscaneado" />
             <button class="custom-btn h-20" @click="guardarCambios">
                 <div>
                 <i class="pi pi-save me-1"></i>
