@@ -1,10 +1,10 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { useCombinedStore } from '@/storage/combinedStore';
-import { CordovaMixin } from '@/mixins/CordovaMixin';
+import { cordovaMixin } from '@/mixins/CordovaMixin';
 
 export default {
-    mixins: [CordovaMixin],
+    mixins: [cordovaMixin],
     computed: {
         ...mapState(useCombinedStore, ['isOnline', 'cordovaListo']), // Accede al estado de cordovaListo
     },
