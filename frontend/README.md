@@ -77,6 +77,14 @@ en main.js
 ### Para instalar axios
 
     npm install axios
+
+### Para instalar primeicons
+
+    npm install primeicons
+
+en /scss/styles.scss
+
+    @import "primeicons/primeicons.css";
     
 ### Vamos con Cordova
 

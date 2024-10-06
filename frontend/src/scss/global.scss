@@ -33,3 +33,40 @@
     font-size: 14px;
     color: #333;
 }
+
+.footer {
+    background-color: #000;
+    padding: 10px 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between; /* Alinear elementos a los lados opuestos */
+    align-items: center;
+}
+
+.status {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.brand {
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #ddd; 
+}
+
+/* Badge personalizado */
+.badge {
+    font-size: 0.9rem; 
+    padding: 0.5em 1em; 
+}

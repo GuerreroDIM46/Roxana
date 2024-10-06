@@ -1,15 +1,19 @@
 <script>
+import { cordovaMixin } from '@/mixins/cordovaMixin'
+import { useCombinedStore } from '@/storage/combinedStore'
+
 export default {
-    data() {
-        return {
-            cordovaListo: false, 
-        }
+    mixins: [cordovaMixin],
+    computed: {
+        cordovaListo() {
+            return useCombinedStore().cordovaListo
+        },
     },
     methods: {
         escanear() {
             if (!this.cordovaListo) {
                 alert("Cordova no está disponible todavía.")
-                return
+                return;
             }
 
             cordova.plugins.barcodeScanner.scan(
@@ -17,7 +21,7 @@ export default {
                     if (!result.cancelled) {
                         this.$emit("codigoEscaneado", result.text)
                     } else {
-                        alert("Escaneo cancelado")
+                        alert("Escaneo cancelado");
                     }
                 },
                 (error) => {
@@ -25,21 +29,9 @@ export default {
                 }
             )
         },
-        onDeviceReady() {
-            this.cordovaListo = true
-            console.log("Cordova está listo.")
-        },
-    },
-    mounted() {
-        document.addEventListener("deviceready", this.onDeviceReady, false)
-        console.log("Esperando a Cordova...")
-    },
-    beforeDestroy() {
-        document.removeEventListener("deviceready", this.onDeviceReady, false)
     },
 }
 </script>
-
 
 <template>
     <div>

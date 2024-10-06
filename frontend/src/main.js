@@ -7,10 +7,14 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import '@/scss/global.scss'
 
 const Home = () => import('@/views/Home.vue')  
+const Listados = () => import('@/views/Listados.vue')  
+const Elementos = () => import('@/views/Elementos.vue')  
 
 const routes = [
-    { path: '/', redirect: '/home'},  
-    { path: '/home', component: Home, name: 'Home' } 
+    { path: '/', redirect: '/listados'},  
+    { path: '/home', component: Home, name: 'Home' },
+    { path: '/listados', component: Listados, name: 'Listados' },  
+    { path: '/elementos', component: Elementos, name: 'Elementos' } 
 ]
 
 const router = createRouter({

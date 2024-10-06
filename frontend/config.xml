@@ -16,5 +16,7 @@
         <icon src="platforms/android/app/src/main/res/mipmap-xxhdpi/logo_roxana.png" density="xxhdpi" />
         <icon src="platforms/android/app/src/main/res/mipmap-xxxhdpi/logo_roxana.png" density="xxxhdpi" />
         <uses-permission android:name="android.permission.CAMERA" />
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     </platform>
 </widget>
