@@ -126,27 +126,48 @@ export const useCombinedStore = defineStore('CombinedStore', {
             }
         },
         async sincronizarElementos() {
-            const elementosModificados = await db.elementos.where('flag').anyOf('modificado', 'creado').toArray()
+            const elementosModificados = await db.elementos.where('flag').anyOf('modificado', 'creado').toArray();
+        
             for (const elemento of elementosModificados) {
-                const { flag, ...elementoSinFlag } = elemento
-                let response
+                const { flag, ...elementoSinFlag } = elemento;
+                let response;
+        
                 if (flag == 'creado') {
-                    response = await postElemento(elementoSinFlag)
+                    response = await postElemento(elementoSinFlag);
                 } else if (flag == 'modificado') {
-                    response = await patchElemento(elementoSinFlag)
+                    response = await patchElemento(elementoSinFlag);
                 }
-                if (response.status >= 200 && response.status < 300) {                    
-                    await db.elementos.delete(elemento.id)
+        
+                if (response.status >= 200 && response.status < 300) {
+                    // Actualizar el flag a null en Dexie
+                    elemento.flag = null;
+                    await db.elementos.put(elemento); // Guardar en DexieDB
+        
+                    // Actualizar el flag a null en Pinia
+                    const index = this.elementos.findIndex(el => el.id === elemento.id);
+                    if (index !== -1) {
+                        this.elementos[index].flag = null;
+                    }
                 }
             }
-        },
+        },        
         async sincronizarListados() {
-            const listadosCreados = await db.listados.where('flag').equals('creado').toArray()
+            const listadosCreados = await db.listados.where('flag').equals('creado').toArray();
+        
             for (const listado of listadosCreados) {
-                const { flag, ...listadoSinFlag } = listado
-                const response = await postListado(listadoSinFlag)
+                const { flag, ...listadoSinFlag } = listado;
+                const response = await postListado(listadoSinFlag);
+        
                 if (response.status >= 200 && response.status < 300) {
-                    await db.listados.delete(listado.id)
+                    // Actualizar el flag a null en Dexie
+                    listado.flag = null;
+                    await db.listados.put(listado); // Guardar en DexieDB
+        
+                    // Actualizar el flag a null en Pinia
+                    const index = this.listados.findIndex(l => l.id === listado.id);
+                    if (index !== -1) {
+                        this.listados[index].flag = null;
+                    }
                 }
             }
         },

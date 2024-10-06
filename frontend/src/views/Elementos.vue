@@ -87,10 +87,11 @@ export default {
         <!-- Mostrar los elementos filtrados si el listado existe -->
         <ul v-if="elementosFiltrados && elementosFiltrados.length > 0" class="list-group list-group-flush">
             <li v-for="elemento in elementosFiltrados" :key="elemento.id" class="list-group-item d-flex justify-content-between align-items-center border-bottom">
+                <i v-if="elemento.flag === 'modificado'" class="pi pi-pen-to-square text-primary"></i>
+                <i v-else-if="elemento.flag === 'creado'" class="pi pi-pen-to-square text-success"></i>
                 <span class="fw-bold">{{ elemento.nombre }}</span>
                 <span v-if="elemento.estado === '100'" class="badge bg-warning">Trip</span>
-                <span v-else-if="elemento.estado === '200'" class="badge bg-success">Ack</span>
-                <i v-if="elemento.flag === 'modificado'" class="pi pi-pen-to-square text-primary"></i>
+                <span v-else-if="elemento.estado === '200'" class="badge bg-success">Ack</span>                
             </li>
         </ul>
 
