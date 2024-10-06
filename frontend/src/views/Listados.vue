@@ -73,7 +73,7 @@ export default {
         <div class="row">
             <!-- Botón 1: Descargar Operaciones -->
             <div class="col-6 col-md-6">
-                <button class="custom-btn w-100" @click="cargarListadosYElementos" :disabled="!this.conexionLista">
+                <button class="custom-btn w-100" @click="cargarListadosYElementos" :disabled="!conexionLista" :class="{ 'disabled-class': !conexionLista }">
                     <div class="icon-group">
                         <i class="pi pi-sync me-1" style="font-size: 36px;"></i>
                         <i class="pi pi-arrow-down" style="font-size: 36px;"></i>
@@ -139,5 +139,8 @@ export default {
 </template>
 
 <style scoped>
-/* Estilos adicionales, si los necesitas */
+.disabled-class {
+    pointer-events: none; /* Deshabilita interacciones */
+    opacity: 0.5; /* Visualmente deshabilitado */
+}
 </style>
