@@ -142,8 +142,8 @@ export default {
                     <div>
                         <i class="pi pi-list" style="font-size: 24px; margin-right: 10px;"></i>
                         <span>{{ listado.nombre }}</span>
-                        <i v-if="listado.flag == 'creado'" class="pi pi-pen-to-square text-success"
-                            style="font-size: 24px; margin-left: 10px;"></i>
+                        <i v-if="listado.flag === 'modificado'" class="pi pi-file-edit text-primary" style="font-size: 24px; margin-left: 10px;"></i>
+                        <i v-else-if="listado.flag === 'creado'" class="pi pi-file-new text-success" style="font-size: 24px; margin-left: 10px;"></i>
                     </div>
                 </button>
             </div>

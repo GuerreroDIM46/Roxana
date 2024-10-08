@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npm run postbuild && npm run copy-vite",
+    "build": "vite build && npm run postbuild && npm run copy-vite && npm run copy-audio",
     "preview": "vite preview",
     "generate-icon-lpdi": "magick src/assets/logo_roxana.jpeg -resize 36x36 platforms/android/app/src/main/res/mipmap-ldpi/logo_roxana.png",
     "generate-icon-mpdi": "magick src/assets/logo_roxana.jpeg -resize 48x48 platforms/android/app/src/main/res/mipmap-mdpi/logo_roxana.png",
@@ -15,6 +15,7 @@
     "generate-icon-xxxhdpi": "magick src/assets/logo_roxana.jpeg -resize 192x192 platforms/android/app/src/main/res/mipmap-xxxhdpi/logo_roxana.png",
     "generate-icons": "npm-run-all --serial generate-icon-lpdi generate-icon-mpdi generate-icon-hdpi generate-icon-xhdpi generate-icon-xxhdpi generate-icon-xxxhdpi",
     "copy-vite": "cpy dist/**/* www/",
+    "copy-audio": "cpy src/assets/*.mp3 platforms/android/app/src/main/assets/www/assets --flat",
     "copy-app": "cpy \"platforms/android/app/build/outputs/apk/debug/app-debug.apk\" ../ --rename=roxana.apk --flat",
     "delete-output": "rimraf platforms/android/app/build/outputs/apk/debug/app-debug.apk",
     "fix-gradle": "node postbuild/fix-gradle.js",

@@ -18,9 +18,9 @@ export const roxanaLibrary = {
         reproducirSonido(tipo) {
             let archivoAudio;
             if (tipo == 'success') {
-                archivoAudio = 'src/assets/sounds/success.mp3'; // Ruta del sonido de éxito
+                archivoAudio = 'src/assets/success.mp3'; // Ruta del sonido de éxito
             } else if (tipo == 'fail') {
-                archivoAudio = 'src/assets/sounds/fail.mp3'; // Ruta del sonido de error
+                archivoAudio = 'src/assets/fail.mp3'; // Ruta del sonido de error
             }
 
             // Reproducir sonido usando el plugin de media de Cordova
@@ -42,25 +42,31 @@ export const roxanaLibrary = {
             if (!this.cordovaListo) {
                 alert("Cordova no está disponible todavía.");
                 return;
-            }
-            cordova.plugins.barcodeScanner.scan(
-                (result) => {
-                    if (!result.cancelled) {
-                        // Guardar el código escaneado en Pinia
-                        this.setCodigoEscaneado(result.text);
-                        console.log("Código escaneado guardado:", result.text);
-                    } else {
-                        alert("Escaneo cancelado");
+            }        
+            return new Promise((resolve, reject) => {
+                cordova.plugins.barcodeScanner.scan(
+                    (result) => {
+                        if (!result.cancelled) {
+                            // Guardar el código escaneado en Pinia
+                            this.setCodigoEscaneado(result.text);
+                            console.log("Código escaneado guardado:", result.text);
+                            resolve(result.text);  // Resolver la promesa con el resultado del escaneo
+                        } else {
+                            alert("Escaneo cancelado");
+                            reject(new Error("Escaneo cancelado")); // Rechazar la promesa si se cancela el escaneo
+                        }
+                    },
+                    (error) => {
+                        alert("Error al escanear: " + error);
+                        reject(error);  // Rechazar la promesa si ocurre un error
+                    },
+                    {
+                        disableSuccessBeep: true, // Desactivar el pitido de éxito
                     }
-                },
-                (error) => {
-                    alert("Error al escanear: " + error);
-                },
-                {
-                    disableSuccessBeep: true, // Desactivar el pitido de éxito
-                }
-            );
+                );
+            });
         }
+        
 
         // Puedes añadir más métodos o funcionalidades aquí según sea necesario
     },

@@ -31,30 +31,30 @@ export default {
             }
         },
 
-        async escanearEnBucle() {
+        async activarEscaner() {
             if (!this.cordovaListo) {
                 alert("Cordova no está disponible todavía.");
                 return;
             }
 
-            while (this.cordovaListo) {
-                try {
-                    await this.escanear(); // Llamamos a la función de escaneo del mixin
+            try {
+                await this.escanear(); // Esperar hasta que el escaneo finalice
 
-                    await this.comparar(); // Comparamos el código escaneado
+                this.comparar(); // Comparamos el código escaneado
 
-                    if (this.elementoEncontrado) {
-                        await this.modificarPropiedades("verificacion"); // Modificamos las propiedades del elemento encontrado
-                        await this.actualizarElementoEnStore(); // Actualizamos el elemento en el store
-                    }
-                } catch (error) {
-                    console.error("Error en el escaneo:", error);
-                    break;
+                if (this.elementoEncontrado) {
+                    this.modificarPropiedades("verificacion"); // Modificamos las propiedades del elemento encontrado
+                    this.actualizarElementoEnPinia(); // Actualizamos el elemento en el store
+                    this.filtrarElementos();
                 }
+
+            } catch (error) {
+                console.error("Error en el escaneo:", error);
             }
         },
 
-        async comparar() {
+
+        comparar() {
             try {
                 console.log("Código escaneado:", this.codigoEscaneado);
 
@@ -70,29 +70,46 @@ export default {
             }
         },
 
-        async modificarPropiedades(operacion) {
+        modificarPropiedades(operacion) {
             if (this.elementoEncontrado) {
                 if (operacion === "verificacion") {
                     this.elementoEncontrado.estado = '200'; // Actualizar estado a 'recepcionado'
                     this.elementoEncontrado.flag = 'modificado'; // Marcar como modificado
                     console.log("Elemento actualizado:", this.elementoEncontrado);
-                    this.reproducirSonido('success'); // Sonido de éxito
+                    // this.reproducirSonido('success'); // Sonido de éxito
                 } else {
                     this.reproducirSonido('fail'); // Sonido de error
+                    console.log("Elemento no actualizado");
                 }
             } else {
                 this.reproducirSonido('fail'); // Sonido de error si no se encuentra el elemento
             }
         },
 
-        actualizarElementoEnStore() {
+        actualizarElementoEnPinia() {
+            // Validar si elementoEncontrado está definido antes de usarlo
+            if (!this.elementoEncontrado || !this.elementoEncontrado.id) {
+                console.error(" Error: elementoEncontrado no está definido o no tiene un ID válido.");
+                return;
+            }
+
+            // Depuración para verificar el ID del elemento encontrado
+            console.log("Actualizando el siguiente elemento:", this.elementoEncontrado);
+
+            // Buscar el índice del elemento en el array de elementos
             const index = this.elementos.findIndex(elemento => elemento.id === this.elementoEncontrado.id);
+
             if (index !== -1) {
-                this.elementos.splice(index, 1, this.elementoEncontrado); // Reemplazar el elemento en el store
+                // Si el elemento existe en el array, reemplazarlo con el actualizado
+                this.elementos.splice(index, 1, this.elementoEncontrado);
+                console.log(`Elemento con ID ${this.elementoEncontrado.id} se ha reemplazado en el array.`);
+            } else {
+                console.error("No se inserto elemento en el array");
             }
 
             // Limpiar elementoEncontrado después de actualizar el store
             this.setElementoEncontrado(null); // Usar la acción para resetear el valor en el store
+            console.log("elementoEncontrado limpiado correctamente.");
         },
 
         // Guardar los elementos modificados en Dexie
@@ -136,6 +153,7 @@ export default {
             <span v-if="elemento.estado === '100'" class="badge bg-warning">Trip</span>
             <span v-else-if="elemento.estado === '200'" class="badge bg-success">Ack</span>
             <span v-else-if="elemento.estado === '300'" class="badge bg-info">New</span>
+
         </li>
     </ul>
 
@@ -145,7 +163,7 @@ export default {
 
     <!-- Botones Escanear y Guardar -->
     <div class="sticky-footer d-flex justify-content-between">
-        <button class="custom-btn h-20" @click="escanearEnBucle">
+        <button class="custom-btn h-20" @click="activarEscaner">
             <div>
                 <i class="pi pi-search me-1"></i>
                 <span>Escanear</span>
