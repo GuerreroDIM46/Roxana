@@ -1,7 +1,4 @@
-.prueba {
-    color: red;
-}
-
+/* Botones personalizados */
 .custom-btn {
     background-color: #f0f0f0;
     border: none;
@@ -34,6 +31,7 @@
     color: #333;
 }
 
+/* Footer */
 .footer {
     background-color: #000;
     padding: 10px 20px;
@@ -44,29 +42,76 @@
 
 .footer-content {
     display: flex;
-    justify-content: space-between; /* Alinear elementos a los lados opuestos */
+    justify-content: space-between;
     align-items: center;
 }
 
-.status {
+.status, .brand {
     color: white;
     font-family: Arial, sans-serif;
     font-size: 14px;
 }
 
-.brand {
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-}
-
+/* List group item */
 .list-group-item {
     border: none;
-    border-bottom: 1px solid #ddd; 
+    border-bottom: 1px solid #ddd;
 }
 
 /* Badge personalizado */
 .badge {
-    font-size: 0.9rem; 
-    padding: 0.5em 1em; 
+    font-size: 0.9rem;
+    padding: 0.5em 1em;
+}
+
+/* Sticky footer */
+.sticky-footer {
+    position: fixed;
+    bottom: 60px;
+    /* Altura del footer Estado de Conexión */
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    padding: 10px;
+    z-index: 100;
+    border-top: 1px solid #ccc;
+}
+
+.sticky-footer button {
+    flex-grow: 1;
+}
+
+/* Header */
+.header {
+    background-color: #000;
+    height: 8vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    color: white;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    max-height: 60px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.app-name {
+    font-size: 18px;
+    margin: 0;
+    white-space: nowrap;
 }

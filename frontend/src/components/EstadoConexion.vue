@@ -1,10 +1,10 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { useCombinedStore } from '@/storage/combinedStore';
-import { cordovaMixin } from '@/mixins/cordovaMixin';
+import { roxanaLibrary } from '@/mixins/roxanaLibrary';
 
 export default {
-    mixins: [cordovaMixin],
+    mixins: [roxanaLibrary],
     computed: {
         ...mapState(useCombinedStore, ['conexionLista', 'cordovaListo']),
     },

@@ -1,9 +1,9 @@
 <script>
-import { cordovaMixin } from '@/mixins/cordovaMixin'
+import { roxanaLibrary } from '@/mixins/roxanaLibrary'
 import { useCombinedStore } from '@/storage/combinedStore'
 
 export default {
-    mixins: [cordovaMixin],
+    mixins: [roxanaLibrary],
     computed: {
         cordovaListo() {
             return useCombinedStore().cordovaListo
@@ -26,6 +26,9 @@ export default {
                 },
                 (error) => {
                     alert("Error al escanear: " + error)
+                },
+                {
+                    disableSuccessBeep: true, // Desactivar el pitido de éxito
                 }
             )
         },

@@ -37,6 +37,8 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",
     "cordova-android": "^13.0.0",
+    "cordova-plugin-file": "^8.1.0",
+    "cordova-plugin-media": "^7.0.0",
     "cordova-plugin-network-information": "^3.0.0",
     "cpy-cli": "^5.0.0",
     "npm-run-all": "^4.1.5",
@@ -53,7 +55,8 @@
       "phonegap-plugin-barcodescanner": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
-      "cordova-plugin-network-information": {}
+      "cordova-plugin-network-information": {},
+      "cordova-plugin-media": {}
     }
   }
 }

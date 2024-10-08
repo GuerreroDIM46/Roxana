@@ -35,21 +35,20 @@ export default {
                 console.error('Error al cargar listados y elementos', error);
             }
         },
-        async sincronizarOperaciones() {
-            this.sincronizando = true; // Activar el estado de sincronización
+        generar() {
+            this.$router.push({ name: 'Generador' })
+        },
+        async sincronizar() {
+            this.sincronizando = true;
             try {
                 console.log("Sincronizando operaciones...");
-                await this.sincronizarElementos();
-                await this.sincronizarListados();
-                console.log("Sincronización completada.");
-
-                // Mostrar alerta de éxito
+                await this.sincronizarOperaciones(); // Llamar a la acción de Pinia
                 alert('Sincronización completada con éxito.');
             } catch (error) {
-                console.error('Error al sincronizar operaciones:', error);
+                console.error('Error al sincronizar las operaciones:', error);
                 alert('Hubo un error al sincronizar las operaciones.');
             } finally {
-                this.sincronizando = false; // Desactivar el estado de sincronización
+                this.sincronizando = false;
             }
         },
         borrarBaseDeDatos() {
@@ -108,7 +107,7 @@ export default {
             
             <!-- Botón 4: Generacion de listados -->
             <div class="col-6 col-md-6 mt-4">
-                <button class="custom-btn w-100" >
+                <button class="custom-btn w-100" @click="generar">
                     <div class="icon-group">
                         <i class="pi pi-file-plus me-1" style="font-size: 36px;"></i>
                     </div>
@@ -129,6 +128,7 @@ export default {
                 <button v-for="listado in listados" :key="listado.id" class="custom-btn w-100 mt-2"
                     @click="mostrarElementos(listado)">
                     <div>
+                        <i v-if="listado.flag == 'creado'" class="pi pi-pen-to-square text-success"></i>
                         <i class="pi pi-list" style="font-size: 24px; margin-right: 10px;"></i>
                         <span>{{ listado.nombre }}</span>
                     </div>

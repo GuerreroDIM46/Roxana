@@ -93,23 +93,53 @@ export const useCombinedStore = defineStore('CombinedStore', {
         },
         async guardarEnLocal() {
             try {
-                // Filtrar los elementos que han sido modificados o creados
-                const elementosModificados = this.elementos.filter(elemento => elemento.flag == 'modificado' || elemento.flag == 'creado');
-                
-                if (elementosModificados.length > 0) {
-                    // Guardar los elementos modificados o creados en Dexie
-                    for (const elemento of elementosModificados) {
-                        const elementoPlano = JSON.parse(JSON.stringify(elemento)); // Eliminar reactividad (Vue Proxy)
-                        await db.elementos.put(elementoPlano); // Guardar en Dexie
-                    }
-                    console.log('Elementos modificados o creados guardados en Dexie:', elementosModificados);
+                const elementosModificadosOCreados = this.obtenerElementosModificadosOCreados();
+                const listadosCreados = this.obtenerListadosCreados();
+
+                if (elementosModificadosOCreados.length > 0) {
+                    await this.guardarElementosEnDexie(elementosModificadosOCreados);
+                    console.log('Elementos modificados o creados guardados en Dexie:', elementosModificadosOCreados);
                 } else {
                     console.log('No hay elementos modificados o creados para guardar en Dexie.');
                 }
+
+                if (listadosCreados.length > 0) {
+                    await this.guardarListadosEnDexie(listadosCreados);
+                    console.log('Listados creados guardados en Dexie:', listadosCreados);
+                } else {
+                    console.log('No hay listados creados para guardar en Dexie.');
+                }
             } catch (error) {
-                console.error('❌ Error al guardar los elementos modificados o creados en Dexie:', error);
+                console.error('❌ Error al guardar los elementos y listados en Dexie:', error);
             }
         },
+
+        // Filtrar elementos modificados o creados
+        obtenerElementosModificadosOCreados() {
+            return this.elementos.filter(elemento => elemento.flag === 'modificado' || elemento.flag === 'creado');
+        },
+
+        // Filtrar listados creados
+        obtenerListadosCreados() {
+            return this.listados.filter(listado => listado.flag === 'creado');
+        },
+
+        // Guardar elementos en Dexie
+        async guardarElementosEnDexie(elementos) {
+            for (const elemento of elementos) {
+                const elementoPlano = JSON.parse(JSON.stringify(elemento)); // Eliminar reactividad (Vue Proxy)
+                await db.elementos.put(elementoPlano);
+            }
+        },
+
+        // Guardar listados en Dexie
+        async guardarListadosEnDexie(listados) {
+            for (const listado of listados) {
+                const listadoPlano = JSON.parse(JSON.stringify(listado)); // Eliminar reactividad (Vue Proxy)
+                await db.listados.put(listadoPlano);
+            }
+        },
+
         async borrarBaseDeDatosLocal() {
             try {
                 // Borrar todos los elementos de la tabla 'elementos'
@@ -125,62 +155,82 @@ export const useCombinedStore = defineStore('CombinedStore', {
                 console.error('❌ Error al borrar la base de datos local:', error);
             }
         },
-        async sincronizarElementos() {
-            const elementosModificados = await db.elementos.where('flag').anyOf('modificado', 'creado').toArray();
-        
-            for (const elemento of elementosModificados) {
-                const { flag, ...elementoSinFlag } = elemento;
-                let response;
-        
-                if (flag == 'creado') {
-                    response = await postElemento(elementoSinFlag);
-                } else if (flag == 'modificado') {
-                    response = await patchElemento(elementoSinFlag);
-                }
-        
-                if (response.status >= 200 && response.status < 300) {
-                    // Actualizar el flag a null en Dexie
-                    elemento.flag = null;
-                    await db.elementos.put(elemento); // Guardar en DexieDB
-        
-                    // Actualizar el flag a null en Pinia
-                    const index = this.elementos.findIndex(el => el.id === elemento.id);
-                    if (index !== -1) {
-                        this.elementos[index].flag = null;
-                    }
-                }
-            }
-        },        
-        async sincronizarListados() {
-            const listadosCreados = await db.listados.where('flag').equals('creado').toArray();
-        
-            for (const listado of listadosCreados) {
-                const { flag, ...listadoSinFlag } = listado;
-                const response = await postListado(listadoSinFlag);
-        
-                if (response.status >= 200 && response.status < 300) {
-                    // Actualizar el flag a null en Dexie
-                    listado.flag = null;
-                    await db.listados.put(listado); // Guardar en DexieDB
-        
-                    // Actualizar el flag a null en Pinia
-                    const index = this.listados.findIndex(l => l.id === listado.id);
-                    if (index !== -1) {
-                        this.listados[index].flag = null;
-                    }
-                }
+        async sincronizarOperaciones() {
+            try {
+                console.log("Iniciando sincronización de elementos y listados...");
+                await this.sincronizarElementos();
+                await this.sincronizarListados();
+                console.log("Sincronización completada con éxito.");
+            } catch (error) {
+                console.error('Error durante la sincronización:', error);
+                throw new Error('Error durante la sincronización.');
             }
         },
-        async crearListado() {
-            const listadosLocales = await db.listados.toArray();
-            const nuevoNombre = `nuevolistado${listadosLocales.length + 1}`
-            const nuevoListado = {
-                nombre: nuevoNombre,
-                tipo: 'inventario',
-                flag: 'creado'
+
+        // Sincronización de elementos modificados o creados
+        async sincronizarElementos() {
+            try {
+                const elementosModificados = await db.elementos
+                    .where('flag')
+                    .anyOf('modificado', 'creado')
+                    .toArray();
+
+                for (const elemento of elementosModificados) {
+                    const { flag, ...elementoSinFlag } = elemento;
+                    let response;
+
+                    // Si es creado o modificado, hacemos la llamada correspondiente
+                    if (flag === 'creado') {
+                        response = await postElemento(elementoSinFlag); // API de creación
+                    } else if (flag === 'modificado') {
+                        response = await patchElemento(elementoSinFlag); // API de modificación
+                    }
+
+                    // Si la respuesta es exitosa, actualizamos el flag a null
+                    if (response.status >= 200 && response.status < 300) {
+                        elemento.flag = null; // Resetear el flag en Dexie
+                        await db.elementos.put(elemento); // Guardar el elemento actualizado en Dexie
+
+                        // Actualizar el flag en Pinia
+                        const index = this.elementos.findIndex(el => el.id === elemento.id);
+                        if (index !== -1) {
+                            this.elementos[index].flag = null;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error al sincronizar los elementos:', error);
+                throw new Error('Error al sincronizar los elementos.');
             }
-            await db.listados.add(nuevoListado)
-            this.listados.push(nuevoListado)
-        },        
+        },
+
+        // Sincronización de listados creados
+        async sincronizarListados() {
+            try {
+                const listadosCreados = await db.listados
+                    .where('flag')
+                    .equals('creado')
+                    .toArray();
+
+                for (const listado of listadosCreados) {
+                    const { flag, ...listadoSinFlag } = listado;
+                    const response = await postListado(listadoSinFlag); // API de creación de listados
+
+                    if (response.status >= 200 && response.status < 300) {
+                        listado.flag = null; // Resetear el flag en Dexie
+                        await db.listados.put(listado); // Guardar el listado actualizado en Dexie
+
+                        // Actualizar el flag en Pinia
+                        const index = this.listados.findIndex(l => l.id === listado.id);
+                        if (index !== -1) {
+                            this.listados[index].flag = null;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error al sincronizar los listados:', error);
+                throw new Error('Error al sincronizar los listados.');
+            }
+        },
     }
 })

@@ -6,15 +6,15 @@ import { createPinia } from 'pinia'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import '@/scss/global.scss'
 
-const Home = () => import('@/views/Home.vue')  
 const Listados = () => import('@/views/Listados.vue')  
 const Elementos = () => import('@/views/Elementos.vue')  
+const Generador = () => import('@/views/Generador.vue')  
 
 const routes = [
     { path: '/', redirect: '/listados'},  
-    { path: '/home', component: Home, name: 'Home' },
     { path: '/listados', component: Listados, name: 'Listados' },  
-    { path: '/elementos', component: Elementos, name: 'Elementos' } 
+    { path: '/elementos', component: Elementos, name: 'Elementos' }, 
+    { path: '/generador', component: Generador, name: 'Generador' } 
 ]
 
 const router = createRouter({

@@ -1,14 +1,14 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { useCombinedStore } from '@/storage/combinedStore';
-import { hateoasMixin } from '@/mixins/hateoasMixin';
+import { roxanaLibrary } from '@/mixins/roxanaLibrary';
 import Escaner from '@/components/Escaner.vue'; // Importar el componente de escaneo
 
 export default {
+    mixins: [roxanaLibrary],
     components: {
         Escaner, // Usar el componente de escaneo
     },
-    mixins: [hateoasMixin],
     data() {
         return {
             elementosFiltrados: [], // Almacenar los elementos filtrados por listado seleccionado
@@ -45,8 +45,9 @@ export default {
                 elementoEncontrado.estado = '200'; // Actualizar estado a recepcionado
                 elementoEncontrado.flag = 'modificado'; // Marcar como modificado
                 console.log("Elemento actualizado:", elementoEncontrado);
+                this.reproducirSonido('success');
             } else {
-                alert("No se encontró ningún elemento con ese código de barras.");
+                this.reproducirSonido('fail');
             }
         },
         // Guardar los elementos modificados en Dexie
@@ -76,12 +77,6 @@ export default {
         <!-- Encabezado con el nombre del listado y botón de volver -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3>{{ listadoSeleccionado ? listadoSeleccionado.nombre : 'Listado no encontrado' }}</h3>
-            <button class="custom-btn h-20" @click="volver">
-                <div>
-                    <i class="pi pi-arrow-left"></i>
-                    <span> Volver</span> 
-                </div>
-            </button>
         </div>
 
         <!-- Mostrar los elementos filtrados si el listado existe -->
@@ -113,19 +108,4 @@ export default {
 </template>
 
 
-<style scoped>
-.sticky-footer {
-    position: fixed;
-    bottom: 60px; /* Altura del footer Estado de Conexión */
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    padding: 10px;
-    z-index: 100;
-    border-top: 1px solid #ccc;
-}
 
-.sticky-footer button {
-    flex-grow: 1;
-}
-</style>
