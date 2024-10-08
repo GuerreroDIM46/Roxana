@@ -1,7 +1,14 @@
 <script>
-import { mapState, mapActions } from 'pinia';
-import { useCombinedStore } from '@/storage/combinedStore';
-import { roxanaLibrary } from '@/mixins/roxanaLibrary';
+import {
+    mapState,
+    mapActions
+} from 'pinia';
+import {
+    useCombinedStore
+} from '@/storage/combinedStore';
+import {
+    roxanaLibrary
+} from '@/mixins/roxanaLibrary';
 
 export default {
     mixins: [roxanaLibrary],
@@ -83,6 +90,9 @@ export default {
             if (index !== -1) {
                 this.elementos.splice(index, 1, this.elementoEncontrado); // Reemplazar el elemento en el store
             }
+
+            // Limpiar elementoEncontrado después de actualizar el store
+            this.setElementoEncontrado(null); // Usar la acción para resetear el valor en el store
         },
 
         // Guardar los elementos modificados en Dexie
@@ -98,7 +108,9 @@ export default {
         },
 
         volver() {
-            this.$router.push({ name: 'Listados' }); // Volver a la página de listados
+            this.$router.push({
+                name: 'Listados'
+            }); // Volver a la página de listados
         }
     },
 
