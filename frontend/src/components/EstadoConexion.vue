@@ -1,50 +1,14 @@
 <script>
-import { mapState, mapActions } from 'pinia';
-import { useCombinedStore } from '@/storage/combinedStore';
-import { roxanaLibrary } from '@/mixins/roxanaLibrary';
+import { mapState } from 'pinia'
+import { useConexionStore } from '@/storage/conexionStore'
+import conexionLibrary from '@/mixins/conexionLibrary'
 
 export default {
-    mixins: [roxanaLibrary],
+    mixins: [conexionLibrary], 
     computed: {
-        ...mapState(useCombinedStore, ['conexionLista', 'cordovaListo']),
+        ...mapState(useConexionStore, ['conexionLista']), 
     },
-    methods: {
-        ...mapActions(useCombinedStore, ['setConexionLista']),
-        checkNetworkStatus() {
-            if (!this.cordovaListo) {
-                console.log("Cordova no está listo para comprobar el estado de la red.");
-                return;
-            }
-
-            if (navigator.connection) {
-                const networkState = navigator.connection.type;
-                const online = networkState !== Connection.NONE;
-                console.log(`Actualizando conexión a: ${online ? 'Online' : 'Offline'}`);
-                this.setConexionLista(online);
-            }
-        },
-        updateNetworkStatus() {
-            if (!this.cordovaListo) {
-                console.log("Cordova no está listo para actualizar el estado de la red.");
-                return;
-            }
-
-            const online = navigator.onLine;
-            console.log(`Actualizando conexión a: ${online ? 'Online' : 'Offline'}`);
-            this.setConexionLista(online);
-        },
-    },
-    mounted() {
-        this.checkNetworkStatus(); // Comprobar el estado inicial de la red
-
-        document.addEventListener('offline', this.updateNetworkStatus, false);
-        document.addEventListener('online', this.updateNetworkStatus, false);
-    },
-    beforeDestroy() {
-        document.removeEventListener('offline', this.updateNetworkStatus);
-        document.removeEventListener('online', this.updateNetworkStatus);
-    },
-};
+}
 </script>
 
 <template>

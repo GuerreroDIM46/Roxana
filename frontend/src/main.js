@@ -8,13 +8,12 @@ import '@/scss/global.scss'
 
 const Listados = () => import('@/views/Listados.vue')  
 const Elementos = () => import('@/views/Elementos.vue')  
-const Generador = () => import('@/views/Generador.vue')  
 
 const routes = [
     { path: '/', redirect: '/listados'},  
     { path: '/listados', component: Listados, name: 'Listados' },  
-    { path: '/elementos', component: Elementos, name: 'Elementos' }, 
-    { path: '/generador', component: Generador, name: 'Generador' } 
+    { path: '/elementos', component: Elementos, name: 'Elementos', props: { operacion: 'verificacion' }}, 
+    { path: '/generador', component: Elementos, name: 'Generador', props: { operacion: 'generacion' }} 
 ]
 
 const router = createRouter({

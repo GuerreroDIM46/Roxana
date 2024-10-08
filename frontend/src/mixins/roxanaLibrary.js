@@ -1,82 +1,82 @@
-import { mapState, mapActions } from 'pinia';
-import { useCombinedStore } from '@/storage/combinedStore';
+import { mapState, mapActions } from 'pinia'
+import { useCombinedStore } from '@/storage/combinedStore'
+import { useEscanerStore } from '@/storage/escanerStore'
+// import { soundLibrary } from '@/libs/soundLibrary'  // Comentado para evitar conflictos con el sonido
 
 export const roxanaLibrary = {
     computed: {
-        ...mapState(useCombinedStore, ['cordovaListo' , 'codigoEscaneado']) // Mapeo directo de cordovaListo
+        ...mapState(useEscanerStore, ['codigoEscaneado']),
+        ...mapState(useCombinedStore, ['elementosFiltrados', 'elementoEncontrado', 'elementos', 'listadoSeleccionado'])
     },
     methods: {
-        ...mapActions(useCombinedStore, ['setCordovaListo', 'setCodigoEscaneado']), // Mapeamos la acción para modificar el estado
+        ...mapActions(useCombinedStore, ['setElementoEncontrado']),
 
-        // Función para cuando Cordova esté listo
-        onDeviceReady() {
-            this.setCordovaListo(true); // Llamamos la acción para cambiar el estado
-            console.log("Cordova está listo.");
+        async realizarOperacion(tipo) {
+            try {
+                await this.escanear()
+                this.comparar(tipo)
+
+                if (this.elementoEncontrado) {
+                    this.modificarPropiedades('actualizar')
+                } else {
+                    this.modificarPropiedades('generar')
+                }
+
+                this.actualizarElementoEnPinia(tipo)
+                this.filtrarElementos()
+            } catch (error) {
+                console.error(`Error en la operación de tipo ${tipo}:`, error)
+            }
         },
 
-        // Reproducir sonidos según el tipo (éxito o error)
-        reproducirSonido(tipo) {
-            let archivoAudio;
-            if (tipo == 'success') {
-                archivoAudio = 'src/assets/success.mp3'; // Ruta del sonido de éxito
-            } else if (tipo == 'fail') {
-                archivoAudio = 'src/assets/fail.mp3'; // Ruta del sonido de error
+        comparar(tipo) {
+            const elemento = (tipo == 'verificacion')
+                ? this.elementosFiltrados.find(el => el.barcode == this.codigoEscaneado)
+                : this.elementos.find(el => el.barcode == this.codigoEscaneado)
+
+            this.setElementoEncontrado(elemento)
+
+            if (!elemento) {
+                console.warn("Elemento no encontrado.")
+                // soundLibrary.reproducirSonido('fail')
+                console.log("Sonido fail: Elemento no encontrado.")
+            }
+        },
+
+        modificarPropiedades(operacion) {
+            if (this.elementoEncontrado && operacion == "actualizar") {
+                this.elementoEncontrado.estado = '200'
+                this.elementoEncontrado.flag = 'modificado'
+                // soundLibrary.reproducirSonido('success')
+                console.log("Sonido success: Elemento actualizado.")
+            } else if (operacion == "generar") {
+                const nuevoId = this.elementos.length ? this.elementos[this.elementos.length - 1].id + 1 : 1
+                this.elementoEncontrado = {
+                    id: nuevoId,
+                    nombre: `Nuevo Elemento ${nuevoId}`,
+                    barcode: this.codigoEscaneado,
+                    estado: '300',
+                    flag: 'creado',
+                    listadoId: this.listadoSeleccionado.id
+                }
+                // soundLibrary.reproducirSonido('success')
+                console.log("Sonido success: Nuevo elemento generado.")
+            } else {
+                // soundLibrary.reproducirSonido('fail')
+                console.log("Sonido fail: Operación fallida.")
+            }
+        },
+
+        actualizarElementoEnPinia(tipo) {
+            const index = this.elementos.findIndex(el => el.id == this.elementoEncontrado.id)
+
+            if (tipo == 'verificacion' && index !== -1) {
+                this.elementos.splice(index, 1, this.elementoEncontrado)
+            } else if (tipo == 'generacion') {
+                this.elementos.push(this.elementoEncontrado)
             }
 
-            // Reproducir sonido usando el plugin de media de Cordova
-            const media = new Media(archivoAudio,
-                () => console.log("Sonido reproducido correctamente"), // Éxito
-                (err) => console.error("Error al reproducir sonido: ", err) // Error
-            );
-            media.play(); // Iniciar la reproducción
+            this.setElementoEncontrado(null)
         },
-
-        // Función para extraer el ID desde un objeto HATEOAS
-        extraerId(objeto, tipoEnlace = 'self') {
-            if (!objeto || !objeto._links || !objeto._links[tipoEnlace] || !objeto._links[tipoEnlace].href) {
-                return null;
-            }
-            return objeto._links[tipoEnlace].href.split('/').pop(); // Extraer el último segmento del href (ID)
-        },
-        async escanear() {
-            if (!this.cordovaListo) {
-                alert("Cordova no está disponible todavía.");
-                return;
-            }        
-            return new Promise((resolve, reject) => {
-                cordova.plugins.barcodeScanner.scan(
-                    (result) => {
-                        if (!result.cancelled) {
-                            // Guardar el código escaneado en Pinia
-                            this.setCodigoEscaneado(result.text);
-                            console.log("Código escaneado guardado:", result.text);
-                            resolve(result.text);  // Resolver la promesa con el resultado del escaneo
-                        } else {
-                            alert("Escaneo cancelado");
-                            reject(new Error("Escaneo cancelado")); // Rechazar la promesa si se cancela el escaneo
-                        }
-                    },
-                    (error) => {
-                        alert("Error al escanear: " + error);
-                        reject(error);  // Rechazar la promesa si ocurre un error
-                    },
-                    {
-                        disableSuccessBeep: true, // Desactivar el pitido de éxito
-                    }
-                );
-            });
-        }
-        
-
-        // Puedes añadir más métodos o funcionalidades aquí según sea necesario
     },
-    mounted() {
-        // Escuchar el evento deviceready cuando Cordova esté disponible
-        document.addEventListener("deviceready", this.onDeviceReady, false);
-        console.log("Esperando a Cordova...");
-    },
-    beforeDestroy() {
-        // Remover el listener de deviceready cuando el componente se destruye
-        document.removeEventListener("deviceready", this.onDeviceReady, false);
-    }
-};
+}
