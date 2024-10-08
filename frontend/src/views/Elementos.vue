@@ -5,6 +5,11 @@ import { roxanaLibrary } from '@/mixins/roxanaLibrary';
 
 export default {
     mixins: [roxanaLibrary],
+    data() {
+        return {
+            elementosFiltrados: [], // Almacenar los elementos filtrados por listado seleccionado
+        };
+    },
     computed: {
         ...mapState(useCombinedStore, ['listadoSeleccionado', 'elementos', 'codigoEscaneado', 'cordovaListo']),  // Mapear cordovaListo
     },
