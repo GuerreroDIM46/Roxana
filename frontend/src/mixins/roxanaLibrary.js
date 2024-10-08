@@ -3,10 +3,10 @@ import { useCombinedStore } from '@/storage/combinedStore';
 
 export const roxanaLibrary = {
     computed: {
-        ...mapState(useCombinedStore, ['cordovaListo']) // Mapeo directo de cordovaListo
+        ...mapState(useCombinedStore, ['cordovaListo' , 'codigoEscaneado']) // Mapeo directo de cordovaListo
     },
     methods: {
-        ...mapActions(useCombinedStore, ['setCordovaListo']), // Mapeamos la acción para modificar el estado
+        ...mapActions(useCombinedStore, ['setCordovaListo', 'setCodigoEscaneado']), // Mapeamos la acción para modificar el estado
 
         // Función para cuando Cordova esté listo
         onDeviceReady() {
@@ -38,6 +38,29 @@ export const roxanaLibrary = {
             }
             return objeto._links[tipoEnlace].href.split('/').pop(); // Extraer el último segmento del href (ID)
         },
+        async escanear() {
+            if (!this.cordovaListo) {
+                alert("Cordova no está disponible todavía.");
+                return;
+            }
+            cordova.plugins.barcodeScanner.scan(
+                (result) => {
+                    if (!result.cancelled) {
+                        // Guardar el código escaneado en Pinia
+                        this.setCodigoEscaneado(result.text);
+                        console.log("Código escaneado guardado:", result.text);
+                    } else {
+                        alert("Escaneo cancelado");
+                    }
+                },
+                (error) => {
+                    alert("Error al escanear: " + error);
+                },
+                {
+                    disableSuccessBeep: true, // Desactivar el pitido de éxito
+                }
+            );
+        }
 
         // Puedes añadir más métodos o funcionalidades aquí según sea necesario
     },

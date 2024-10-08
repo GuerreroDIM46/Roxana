@@ -1,38 +1,13 @@
 <script>
-import { roxanaLibrary } from '@/mixins/roxanaLibrary'
-import { useCombinedStore } from '@/storage/combinedStore'
+import { mapState } from 'pinia';  // Importar mapState
+import { useCombinedStore } from '@/storage/combinedStore';  // Pinia store
+import { roxanaLibrary } from '@/mixins/roxanaLibrary';  // Mixin
 
 export default {
-    mixins: [roxanaLibrary],
+    mixins: [roxanaLibrary],  // Usar el mixin
     computed: {
-        cordovaListo() {
-            return useCombinedStore().cordovaListo
-        },
-    },
-    methods: {
-        escanear() {
-            if (!this.cordovaListo) {
-                alert("Cordova no está disponible todavía.")
-                return;
-            }
-
-            cordova.plugins.barcodeScanner.scan(
-                (result) => {
-                    if (!result.cancelled) {
-                        this.$emit("codigoEscaneado", result.text)
-                    } else {
-                        alert("Escaneo cancelado");
-                    }
-                },
-                (error) => {
-                    alert("Error al escanear: " + error)
-                },
-                {
-                    disableSuccessBeep: true, // Desactivar el pitido de éxito
-                }
-            )
-        },
-    },
+        ...mapState(useCombinedStore, ['cordovaListo']),  // Usar mapState para obtener cordovaListo desde Pinia
+    }
 }
 </script>
 

@@ -2,25 +2,20 @@
 import { mapState, mapActions } from 'pinia';
 import { useCombinedStore } from '@/storage/combinedStore';
 import { roxanaLibrary } from '@/mixins/roxanaLibrary';
-import Escaner from '@/components/Escaner.vue'; // Importar el componente de escaneo
 
 export default {
     mixins: [roxanaLibrary],
-    components: {
-        Escaner, // Usar el componente de escaneo
-    },
     data() {
         return {
-            codigoEscaneado: null,  // Almacenar el código escaneado
             nuevoListado: null, // El listado generado
             elementosFiltrados: [], // Almacenar los elementos del listado generado
         };
     },
     computed: {
-        ...mapState(useCombinedStore, ['listados', 'elementos']), // Obtener los listados y elementos del store
+        ...mapState(useCombinedStore, ['listados', 'elementos', 'codigoEscaneado', 'cordovaListo']),  // Obtener datos de Pinia
     },
     methods: {
-        ...mapActions(useCombinedStore, ['guardarEnLocal']), // Acciones de Pinia
+        ...mapActions(useCombinedStore, ['guardarEnLocal', 'setCodigoEscaneado']), // Acciones de Pinia
 
         // Método para crear un nuevo listado
         crearNuevoListado() {
@@ -50,46 +45,56 @@ export default {
             }
         },
 
-        // Método para añadir un elemento al listado generado tras escanear
-        siEscaneado(codigo) {
-            this.codigoEscaneado = codigo; // Guardar el código escaneado
-            console.log("Código escaneado:", this.codigoEscaneado);
+        // Método para escanear en bucle
+        async escanearEnBucle() {
+            if (!this.cordovaListo) {
+                alert("Cordova no está disponible todavía.");
+                return;
+            }
 
-            // Buscar si ya existe un elemento con este código de barras en el array de elementos
-            const elementoExistente = this.elementos.find(elemento => elemento.barcode === this.codigoEscaneado);
-            const ultimoIdElemento = this.elementos.length ? this.elementos[this.elementos.length - 1].id : 0;
-            const nuevoIdElemento = ultimoIdElemento + 1;
+            try {
+                // Escanear y almacenar el código escaneado en Pinia
+                await this.escanear();  // Llamada a la función de escaneo del mixin `roxanaLibrary`
 
-            // Crear el nuevo elemento
-            const nuevoElemento = {
-                id: nuevoIdElemento,
-                nombre: elementoExistente ? elementoExistente.nombre : `Nuevo Elemento ${nuevoIdElemento}`,
-                barcode: this.codigoEscaneado,
-                estado: 300,
-                listado: `https://roxanaapitest.manabo.org/api/listados/${this.nuevoListado.id}`,  // Guardar como string por ahora
-                listadoId: this.nuevoListado.id,  // Añadir la propiedad listadoId con el id del nuevo listado
-                flag: 'creado',
-            };
+                console.log("Código escaneado:", this.codigoEscaneado);
 
-            // Añadir el nuevo elemento al array de elementos global y local
-            this.elementos.push(nuevoElemento); // Añadir al store
-            this.elementosFiltrados.push(nuevoElemento); // Añadir a la lista local para mostrar en la UI
-            console.log('Elemento añadido:', nuevoElemento);
+                // Buscar si ya existe un elemento con este código de barras en el array de elementos
+                const elementoExistente = this.elementos.find(elemento => elemento.barcode === this.codigoEscaneado);
+                const ultimoIdElemento = this.elementos.length ? this.elementos[this.elementos.length - 1].id : 0;
+                const nuevoIdElemento = ultimoIdElemento + 1;
 
-            // Refrescar los elementos filtrados
-            this.filtrarElementos();
+                // Crear el nuevo elemento
+                const nuevoElemento = {
+                    id: nuevoIdElemento,
+                    nombre: elementoExistente ? elementoExistente.nombre : `Nuevo Elemento ${nuevoIdElemento}`,
+                    barcode: this.codigoEscaneado,
+                    estado: "300",
+                    listado: `https://roxanaapitest.manabo.org/api/listados/${this.nuevoListado.id}`,  // Guardar como string por ahora
+                    listadoId: this.nuevoListado.id,  // Añadir la propiedad listadoId con el id del nuevo listado
+                    flag: 'creado',
+                };
+
+                // Añadir el nuevo elemento al array de elementos global y local
+                this.elementos.push(nuevoElemento); // Añadir al store
+                this.elementosFiltrados.push(nuevoElemento); // Añadir a la lista local para mostrar en la UI
+                console.log('Elemento añadido:', nuevoElemento);
+
+                // Refrescar los elementos filtrados
+                this.filtrarElementos();
+
+                // Continuar escaneando automáticamente
+                this.escanearEnBucle();  // Llamar a sí mismo para continuar con el escaneo en bucle
+            } catch (error) {
+                console.error("Error en el escaneo:", error);
+            }
         },
 
         // Método para guardar los cambios (listado y elementos) en DexieDB
         async guardarCambios() {
             try {
                 await this.guardarEnLocal(); // Llamar la acción de Pinia para guardar en local
-
-                // Mostrar alerta de éxito
                 alert('Cambios guardados con éxito.');
-
-                // Volver a la página de Listados
-                this.volver();
+                this.volver(); // Volver a la página de Listados
             } catch (error) {
                 console.error('Error al guardar los cambios:', error);
                 alert('Hubo un error al guardar los cambios.');
@@ -132,7 +137,12 @@ export default {
 
         <!-- Botones Escanear y Guardar -->
         <div class="sticky-footer d-flex justify-content-between">
-            <Escaner @codigoEscaneado="siEscaneado" />
+            <button class="custom-btn h-20" @click="escanearEnBucle">
+                <div>
+                    <i class="pi pi-search me-1"></i>
+                    <span>Escanear</span>
+                </div>
+            </button>
             <button class="custom-btn h-20" @click="guardarCambios">
                 <div>
                     <i class="pi pi-save me-1"></i>

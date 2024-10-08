@@ -15,11 +15,11 @@ export default {
     methods: {
         ...mapActions(useCombinedStore, [
             'cargarListados',
-            'cargarElementos', 
-            'seleccionarListado', 
-            'sincronizarElementos', 
-            'sincronizarListados',
-            'borrarBaseDeDatosLocal'
+            'cargarElementos',
+            'seleccionarListado',
+            'sincronizarOperaciones',
+            'borrarBaseDeDatosLocal',
+            'cargarDatosDesdeDexie'
         ]),
 
         // Método para seleccionar un listado y mostrar los elementos
@@ -53,7 +53,7 @@ export default {
         },
         borrarBaseDeDatos() {
             const confirmacion = confirm("¿Estás seguro de que deseas borrar todos los datos locales? Esta acción no se puede deshacer.");
-            
+
             if (confirmacion) {
                 // Si el usuario confirma, borra la base de datos
                 this.borrarBaseDeDatosLocal();
@@ -64,6 +64,16 @@ export default {
             }
         }
     },
+    mounted() {
+        // Verificar si listados y elementos en Pinia están vacíos
+        if (this.listados.length === 0 || this.elementos.length === 0) {
+            console.log("Listados o Elementos vacíos en Pinia, comprobando DexieDB...");
+
+            this.cargarDatosDesdeDexie(); // Llamamos la función para cargar desde Dexie
+        } else {
+            console.log("Listados y Elementos ya están cargados en Pinia.");
+        }
+    }
 };
 </script>
 
@@ -72,7 +82,8 @@ export default {
         <div class="row">
             <!-- Botón 1: Descargar Operaciones -->
             <div class="col-6 col-md-6">
-                <button class="custom-btn w-100" @click="cargarListadosYElementos" :disabled="!conexionLista" :class="{ 'disabled-class': !conexionLista }">
+                <button class="custom-btn w-100" @click="cargarListadosYElementos" :disabled="!conexionLista"
+                    :class="{ 'disabled-class': !conexionLista }">
                     <div class="icon-group">
                         <i class="pi pi-sync me-1" style="font-size: 36px;"></i>
                         <i class="pi pi-arrow-down" style="font-size: 36px;"></i>
@@ -84,7 +95,8 @@ export default {
 
             <!-- Botón 2: Sincronizar Operaciones -->
             <div class="col-6 col-md-6">
-                <button class="custom-btn w-100" @click="sincronizarOperaciones" :disabled="!conexionLista || sincronizando" :class="{ 'disabled-class': !conexionLista || sincronizando}">
+                <button class="custom-btn w-100" @click="sincronizar" :disabled="!conexionLista || sincronizando"
+                    :class="{ 'disabled-class': !conexionLista || sincronizando }">
                     <div class="icon-group">
                         <i class="pi pi-sync me-1" style="font-size: 36px;"></i>
                         <i class="pi pi-arrow-up" style="font-size: 36px;"></i>
@@ -104,7 +116,7 @@ export default {
                 </button>
             </div>
 
-            
+
             <!-- Botón 4: Generacion de listados -->
             <div class="col-6 col-md-6 mt-4">
                 <button class="custom-btn w-100" @click="generar">
@@ -115,7 +127,7 @@ export default {
                 </button>
             </div>
 
-            
+
         </div>
     </div>
 
@@ -128,9 +140,10 @@ export default {
                 <button v-for="listado in listados" :key="listado.id" class="custom-btn w-100 mt-2"
                     @click="mostrarElementos(listado)">
                     <div>
-                        <i v-if="listado.flag == 'creado'" class="pi pi-pen-to-square text-success"></i>
                         <i class="pi pi-list" style="font-size: 24px; margin-right: 10px;"></i>
                         <span>{{ listado.nombre }}</span>
+                        <i v-if="listado.flag == 'creado'" class="pi pi-pen-to-square text-success"
+                            style="font-size: 24px; margin-left: 10px;"></i>
                     </div>
                 </button>
             </div>
@@ -140,7 +153,9 @@ export default {
 
 <style scoped>
 .disabled-class {
-    pointer-events: none; /* Deshabilita interacciones */
-    opacity: 0.5; /* Visualmente deshabilitado */
+    pointer-events: none;
+    /* Deshabilita interacciones */
+    opacity: 0.5;
+    /* Visualmente deshabilitado */
 }
 </style>
