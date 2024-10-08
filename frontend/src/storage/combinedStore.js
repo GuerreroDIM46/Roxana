@@ -11,6 +11,7 @@ export const useCombinedStore = defineStore('CombinedStore', {
         codigoEscaneado: null,
         alertaSobreescritura: null,
         listadoSeleccionado: null,
+        elementoEncontrado:null
     }),
     actions: {
         setConexionLista(estado) {
@@ -18,6 +19,9 @@ export const useCombinedStore = defineStore('CombinedStore', {
         },
         setCordovaListo(estado) {
             this.cordovaListo = estado
+        },
+        setElementoEncontrado(elemento) {
+            this.elementoEncontrado = elemento
         },
         seleccionarListado(listado) {
             this.listadoSeleccionado = listado
