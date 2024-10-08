@@ -83,7 +83,7 @@ export default {
                 this.filtrarElementos();
 
                 // Continuar escaneando automáticamente
-                this.escanearEnBucle();  // Llamar a sí mismo para continuar con el escaneo en bucle
+                // Llamar a sí mismo para continuar con el escaneo en bucle
             } catch (error) {
                 console.error("Error en el escaneo:", error);
             }

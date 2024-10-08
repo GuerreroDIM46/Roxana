@@ -45,7 +45,7 @@ export default {
                 }
 
                 // Después de cada escaneo, iniciamos un nuevo escaneo en bucle
-                this.escanearEnBucle();
+                
 
             } catch (error) {
                 console.error("Error en el escaneo:", error);
