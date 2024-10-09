@@ -11,72 +11,78 @@ export const roxanaLibrary = {
     methods: {
         ...mapActions(useCombinedStore, ['setElementoEncontrado']),
 
-        async realizarOperacion(tipo) {
+        async realizarOperacion(tipo) {       // Puede ser 'verificacion' o 'generacion'
             try {
-                await this.escanear()
-                this.comparar(tipo)
-
-                if (this.elementoEncontrado) {
-                    this.modificarPropiedades('actualizar')
-                } else {
-                    this.modificarPropiedades('generar')
+                await this.escanear()   // devuelve codigoEscaneado
+                this.comparar(tipo)      // devuelve elementoEncontrado
+                if (!this.elementoEncontrado) { // si no existe interrumpe operacion
+                    // soundLibrary.reproducirSonido('fail')
+                    return
                 }
-
-                this.actualizarElementoEnPinia(tipo)
-                this.filtrarElementos()
+                this.modificarPropiedades(tipo)  // le cambia las propiedades al elemento encontrada
+                this.actualizarElementoEnPinia(tipo)  // guarda elemento encontrado en pinia
+                this.filtrarElementos() // hace un filtrar
             } catch (error) {
                 console.error(`Error en la operación de tipo ${tipo}:`, error)
             }
         },
 
         comparar(tipo) {
-            const elemento = (tipo == 'verificacion')
-                ? this.elementosFiltrados.find(el => el.barcode == this.codigoEscaneado)
-                : this.elementos.find(el => el.barcode == this.codigoEscaneado)
+            let elementos;        
+            if (tipo === "verificacion") {
+                elementos = this.elementosFiltrados;
+            } else if (tipo === "generacion") {
+                elementos = this.elementos;
+            } else {
+                console.log("❌Tipo de operación no reconocido.");
+                return; 
+            }
 
-            this.setElementoEncontrado(elemento)
-
+            const elemento = elementos.find(el => el.barcode === this.codigoEscaneado);        
+            this.setElementoEncontrado(elemento);        
             if (!elemento) {
-                console.warn("Elemento no encontrado.")
-                // soundLibrary.reproducirSonido('fail')
-                console.log("Sonido fail: Elemento no encontrado.")
+                console.log("❌Elemento no encontrado.");
             }
         },
+        
+        
 
-        modificarPropiedades(operacion) {
-            if (this.elementoEncontrado && operacion == "actualizar") {
-                this.elementoEncontrado.estado = '200'
-                this.elementoEncontrado.flag = 'modificado'
-                // soundLibrary.reproducirSonido('success')
-                console.log("Sonido success: Elemento actualizado.")
-            } else if (operacion == "generar") {
-                const nuevoId = this.elementos.length ? this.elementos[this.elementos.length - 1].id + 1 : 1
-                this.elementoEncontrado = {
-                    id: nuevoId,
-                    nombre: `Nuevo Elemento ${nuevoId}`,
-                    barcode: this.codigoEscaneado,
-                    estado: '300',
-                    flag: 'creado',
-                    listadoId: this.listadoSeleccionado.id
-                }
-                // soundLibrary.reproducirSonido('success')
-                console.log("Sonido success: Nuevo elemento generado.")
-            } else {
-                // soundLibrary.reproducirSonido('fail')
-                console.log("Sonido fail: Operación fallida.")
+        modificarPropiedades(tipo) {
+            switch (tipo) {
+                case "verificacion":
+                    this.elementoEncontrado.estado = '200';
+                    this.elementoEncontrado.flag = 'modificado';
+                    // soundLibrary.reproducirSonido('success');
+                    console.log("Elemento actualizado:", this.elementoEncontrado);
+                    break;
+        
+                case "generacion":
+                    this.elementoEncontrado.estado = '300';
+                    this.elementoEncontrado.flag = 'modificado';
+                    this.elementoEncontrado.listadoId = this.listadoSeleccionado.id
+                    // soundLibrary.reproducirSonido('success');
+                    console.log("Elemento generado:", this.elementoEncontrado);
+                    break;
+        
+                default:
+                    console.log("Operación fallida: tipo no reconocido.");
+                    // soundLibrary.reproducirSonido('fail');
+                    break;
             }
         },
 
         actualizarElementoEnPinia(tipo) {
-            const index = this.elementos.findIndex(el => el.id == this.elementoEncontrado.id)
-
-            if (tipo == 'verificacion' && index !== -1) {
-                this.elementos.splice(index, 1, this.elementoEncontrado)
-            } else if (tipo == 'generacion') {
-                this.elementos.push(this.elementoEncontrado)
-            }
-
-            this.setElementoEncontrado(null)
-        },
+            if (tipo === 'verificacion') {
+                const index = this.elementos.findIndex(el => el.id === this.elementoEncontrado.id);
+                if (index !== -1) {
+                    this.elementos.splice(index, 1, this.elementoEncontrado); // Reemplazar el elemento
+                }
+            } else if (tipo === 'generacion') {
+                this.elementos.push(this.elementoEncontrado); // Agregar nuevo elemento al final
+            }        
+            this.setElementoEncontrado(null); // Limpiar el elementoEncontrado después de actualizar
+        }
+        
+        
     },
 }

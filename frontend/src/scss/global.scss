@@ -1,10 +1,53 @@
-/* Botones personalizados */
+// Definición de temas de colores
+$light-theme: (
+    background-color: white,  // Fondo de la aplicación, appname, span del footer
+    primary-text-color: black,    // Footer, header, iconos de botones, texto de botones
+    button-color: lightgrey           // Color de los botones
+);
+
+$dark-theme: (
+    background-color: #333,
+    primary-text-color: #f0f0f0,
+    button-color: #f0f0f0
+);
+
+$high-contrast-theme: (
+    background-color: yellow,
+    primary-text-color: black,
+    button-color: black
+);
+
+// Selecciona el tema activo
+$active-theme: $light-theme; // Puedes cambiar entre $light-theme, $dark-theme, $high-contrast-theme
+
+// Función para obtener colores desde el tema seleccionado
+@function get-color($key) {
+    @return map-get($active-theme, $key);
+}
+
+/* ---------------------
+   1. Body
+--------------------- */
+
+body {
+    background-color: get-color(background-color); // Color de fondo de la aplicación
+    color: get-color(primary-text-color);          // Color del texto general
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------------------
+   2. Botones
+--------------------- */
+
+// Botones personalizados
 .custom-btn {
-    background-color: #f0f0f0;
+    background-color: get-color(button-color); // Color de fondo del botón
     border: none;
-    padding: 20px;
+    padding: 16px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // Efecto de sombra estándar
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,11 +64,11 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Iconos dentro del botón personalizado */
-.custom-btn i {
-    color: #333;
-    font-size: 24px;
-    margin-right: 10px;
+/* Texto dentro del botón */
+.custom-btn div {
+    margin-top: 10px;
+    font-size: 14px;
+    color: get-color(primary-text-color); // Color del texto de los botones
 }
 
 /* Botones con iconos específicos */
@@ -34,30 +77,40 @@
     margin-left: 10px;
 }
 
-.custom-btn div {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #333;
+/* ---------------------
+   3. Iconos
+--------------------- */
+
+// Iconos dentro del botón personalizado
+.custom-btn i {
+    color: get-color(primary-text-color); // Color de los iconos de los botones
+    font-size: 24px;
+    margin-right: 10px;
 }
 
 /* Grupo de iconos */
+.icon-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .icon-group i {
-    font-size: 36px;
+    font-size: 34px;
+    margin-right: 5px; /* Espacio entre los iconos */
 }
 
-/* Deshabilitación de botones */
-.disabled-class {
-    pointer-events: none;
-    opacity: 0.5;
-}
+/* ---------------------
+   4. Footer
+--------------------- */
 
-/* Footer */
 .footer {
-    background-color: #000;
+    background-color: get-color(primary-text-color); // Fondo del footer
     padding: 10px 20px;
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 1;
 }
 
 .footer-content {
@@ -67,50 +120,25 @@
 }
 
 .status,
-.brand {
-    color: white;
+.brand,
+.footer-content span {
+    color: get-color(background-color); // Color del texto en el footer (y span)
     font-family: Arial, sans-serif;
     font-size: 14px;
 }
 
-/* List group item */
-.list-group-item {
-    border: none;
-    border-bottom: 1px solid #ddd;
-}
+/* ---------------------
+   5. Header
+--------------------- */
 
-/* Badge personalizado */
-.badge {
-    font-size: 0.9rem;
-    padding: 0.5em 1em;
-}
-
-/* Sticky footer */
-.sticky-footer {
-    position: fixed;
-    bottom: 60px;
-    /* Altura del footer Estado de Conexión */
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    padding: 10px;
-    z-index: 100;
-    border-top: 1px solid #ccc;
-}
-
-.sticky-footer button {
-    flex-grow: 1;
-}
-
-/* Header */
 .header {
-    background-color: #000;
+    background-color: get-color(primary-text-color); // Color del fondo del header
     height: 8vh;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    color: white;
+    color: get-color(background-color); // Color del texto en el header
 }
 
 .header-container {
@@ -133,6 +161,49 @@
 
 .app-name {
     font-size: 18px;
+    color: get-color(background-color); // Color del nombre de la app
     margin: 0;
     white-space: nowrap;
+}
+
+/* ---------------------
+   6. List Items
+--------------------- */
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #ddd; // El borde inferior es estándar
+}
+
+/* ---------------------
+   7. Sticky Footer
+--------------------- */
+
+.sticky-footer {
+    position: fixed;
+    bottom: 45px;
+    left: 0;
+    right: 0;
+    background-color: get-color(background-color); // Fondo del sticky footer
+    padding: 10px;
+    z-index: 10;
+    border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Estilos de los botones en el sticky-footer */
+.sticky-footer button {
+    flex-grow: 1;
+    margin: 0 5px;
+    background-color: get-color(button-color); // Color de los botones en el sticky-footer
+}
+
+/* ---------------------
+   8. Deshabilitación
+--------------------- */
+
+.disabled-class {
+    pointer-events: none;
+    opacity: 0.5;
 }

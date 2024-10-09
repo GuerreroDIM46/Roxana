@@ -1,25 +1,26 @@
 import axios from 'axios'
 
-const api = axios.create({
-    baseURL: 'https://roxanaapitest.manabo.org/api/',
-    maxBodyLength: Infinity,
-    headers: {
-        "Content-Type": "application/json"
-    }
-})
+export const host = 'https://roxanaapitest.manabo.org/api/'
 
-const API_LISTADOSSINPAGINACION = 'listados/search/listadosSinPaginacion'
-const API_ELEMENTOSSINPAGINACION = 'elementos/search/elementosSinPaginacion'
-const API_LISTADOS = 'listados'
-const API_ELEMENTOS = 'elementos'
-const API_ELEMENTOSPORLISTADO = 'elementos/search/elementosPorListado'
+const API_LISTADOSSINPAGINACION = host + 'listados/search/listadosSinPaginacion'
+const API_ELEMENTOSSINPAGINACION = host + 'elementos/search/elementosSinPaginacion'
+const API_LISTADOS = host + 'listados'
+const API_ELEMENTOS = host + 'elementos'
+const API_ELEMENTOSPORLISTADO = host + 'elementos/search/elementosPorListado'
+
 
 function llamadaAPI(method, body, path) {
-    return api.request({
+    let config = {
         method: method ?? "get",
+        maxBodyLength: Infinity,
         url: path,
-        data: body
-    })
+        headers: {}
+    }
+    if (body) {
+        config.data = body
+        config.headers["Content-Type"] = "application/json"
+    }
+    return axios.request(config)
 }
 
 export function getListados() {
@@ -30,8 +31,9 @@ export function getElementos() {
     return llamadaAPI('get', null, API_ELEMENTOSSINPAGINACION)
 }
 
-export function getElementosListado(listadoId) {
-    return llamadaAPI('get', null, `${API_ELEMENTOSPORLISTADO}?listadoId=${listadoId}`)
+export function getElementosListado(listado) {
+    const url = `${API_ELEMENTOSPORLISTADO}?listadoId=${listado}`
+    return llamadaAPI('get', null, url)
 }
 
 export function postListado(listado) {
@@ -43,5 +45,7 @@ export function postElemento(elemento) {
 }
 
 export function patchElemento(elemento) {
-    return llamadaAPI('patch', elemento, `${API_ELEMENTOS}/${elemento.id}`)
+    const url = `${API_ELEMENTOS}/${elemento.id}`
+    return llamadaAPI('patch', elemento, url)
 }
+

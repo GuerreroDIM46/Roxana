@@ -1,8 +1,9 @@
 import { mapState, mapActions } from 'pinia'
 import { useConexionStore } from '@/storage/conexionStore'
+import { useCordovaStore } from '@/storage/cordovaStore'
 import { cordovaLibrary } from '@/mixins/cordovaLibrary'
 
-export default {
+export const conexionLibrary = {
     mixins: [cordovaLibrary],
     computed: {
         ...mapState(useCordovaStore, ['cordovaListo']),

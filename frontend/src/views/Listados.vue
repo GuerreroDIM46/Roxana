@@ -5,15 +5,10 @@ import { useCombinedStore } from '@/storage/combinedStore'
 import { useSincronizacionStore } from '@/storage/sincronizacionStore'
 
 export default {
-    data() {
-        return {
-            cargandoElementos: false,
-        }
-    },
     computed: {
         ...mapState(useConexionStore, ['conexionLista']),
-        ...mapState(useCombinedStore, ['listados', 'elementos']),
-        ...mapState(useSincronizacionStore, ['listados', 'elementos', 'sincronizando']),
+        ...mapState(useCombinedStore, ['listados', 'elementos', 'cargando']),
+        ...mapState(useSincronizacionStore, ['sincronizando']),
     },
     methods: {
         ...mapActions(useCombinedStore, ['cargarListados', 'cargarElementos', 'seleccionarListado']),
@@ -27,7 +22,9 @@ export default {
         async cargarListadosYElementos() {
             try {
                 await this.cargarListados()
+                console.log("Listados cargados en la pagina: ", this.listados)
                 await this.cargarElementos()
+                console.log("Elementos cargados: ", this.elementos)
             } catch (error) {
                 console.error('Error al cargar listados y elementos', error)
             }
@@ -37,16 +34,18 @@ export default {
             this.$router.push({ name: 'Generador' })
         },
 
+        tieneElementosModificados(listado) {
+            const elementosFiltrados = this.elementos.filter(elemento => elemento.listadoId === listado.id);
+            return elementosFiltrados.some(elemento => elemento.flag === 'modificado');
+        },
+
         async sincronizar() {
-            this.sincronizando = true
             try {
                 await this.sincronizarOperaciones()
                 alert('Sincronización completada con éxito.')
             } catch (error) {
                 console.error('Error al sincronizar las operaciones:', error)
                 alert('Hubo un error al sincronizar las operaciones.')
-            } finally {
-                this.sincronizando = false
             }
         },
 
@@ -60,7 +59,8 @@ export default {
     },
 
     mounted() {
-        if (this.listados.length === 0 || this.elementos.length === 0) {
+        if ((this.listados && this.listados.length === 0) || (this.elementos && this.elementos.length === 0)) {
+            console.log("Habia datos en el store, los voy a cargar")
             this.cargarDatosDesdeDexie()
         }
     }
@@ -68,68 +68,64 @@ export default {
 </script>
 
 <template>
-    <div class="container px-4 mt-5">
-        <div class="row">
-            <div class="col-6 col-md-6">
-                <button class="custom-btn w-100" @click="cargarListadosYElementos" :disabled="!conexionLista"
-                    :class="{ 'disabled-class': !conexionLista }">
-                    <div class="icon-group">
-                        <i class="pi pi-sync me-1"></i>
-                        <i class="pi pi-arrow-down"></i>
-                    </div>
-                    <div v-if="!cargandoElementos">Descargar Ops</div>
-                    <div v-else><i class="pi pi-spin pi-spinner"></i> Cargando...</div>
-                </button>
-            </div>
-
-            <div class="col-6 col-md-6">
-                <button class="custom-btn w-100" @click="sincronizar" :disabled="!conexionLista || sincronizando"
-                    :class="{ 'disabled-class': !conexionLista || sincronizando }">
-                    <div class="icon-group">
-                        <i class="pi pi-sync me-1"></i>
-                        <i class="pi pi-arrow-up"></i>
-                    </div>
-                    <div v-if="!sincronizando">Sincronizar Ops</div>
-                    <div v-else><i class="pi pi-spin pi-spinner"></i> Sincronizando...</div>
-                </button>
-            </div>
-
-            <div class="col-6 col-md-6 mt-4">
-                <button class="custom-btn w-100" @click="borrarBaseDeDatos">
-                    <div class="icon-group">
-                        <i class="pi pi-trash me-1"></i>
-                    </div>
-                    <div>Descartar Ops</div>
-                </button>
-            </div>
-
-            <div class="col-6 col-md-6 mt-4">
-                <button class="custom-btn w-100" @click="generar">
-                    <div class="icon-group">
-                        <i class="pi pi-file-plus me-1"></i>
-                    </div>
-                    <div>Generar</div>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="container px-4 mt-1">
-        <div class="row mt-4">
+    <div class="container-fluid px-4 mt-2">
+        <!-- Botón Generar como parte de los listados -->
+        <div class="row mt-4 mb-2">
             <div class="col-12">
                 <h3>Listados Disponibles</h3>
+
+                <!-- Botón de generar listado -->
+                <button class="custom-btn w-100 mt-3" @click="generar">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <i class="pi pi-file-plus me-2"></i>
+                        <span class="me-2">Generar Listado</span>
+                        <i></i> <!-- Espacio vacío para mantener la misma estructura -->
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Listados disponibles con barra de scroll si hay muchos elementos -->
+        <div class="row mt-2" style="max-height: 60vh; overflow-y: auto;">
+            <div class="col-12">
                 <button v-for="listado in listados" :key="listado.id" class="custom-btn w-100 mt-2"
                     @click="mostrarElementos(listado)">
-                    <div>
-                        <i class="pi pi-list"></i>
-                        <span>{{ listado.nombre }}</span>
-                        <i v-if="listado.flag === 'modificado'" class="pi pi-file-edit text-primary"></i>
-                        <i v-else-if="listado.flag === 'creado'" class="pi pi-file-new text-success"></i>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <i v-if="tieneElementosModificados(listado) || (listado.flag == 'creado')"
+                            class="pi pi-file-edit"></i>
+                        <i v-if="!listado.flag && !tieneElementosModificados(listado)" class="pi pi-file"></i>                        
+                        <span class="me-2">{{ listado.nombre }}</span>
+
                     </div>
                 </button>
             </div>
         </div>
     </div>
+
+
+    <!-- Botones de acción siempre visibles encima del footer -->
+    <div class="sticky-footer d-flex justify-content-between align-items-center">
+        <button class="custom-btn w-90 me-1" @click="cargarListadosYElementos" :disabled="!conexionLista"
+            :class="{ 'disabled-class': !conexionLista }">
+            <div class="icon-group">
+                <i class="pi pi-file-import me-1"></i>
+            </div>
+            <div>Descargar <br> Operaciones</div>
+        </button>
+
+        <button class="custom-btn w-90 me-1" @click="sincronizar" :disabled="!conexionLista || sincronizando"
+            :class="{ 'disabled-class': !conexionLista || sincronizando }">
+            <div class="icon-group">
+                <i class="pi pi-file-export me-1"></i>
+            </div>
+            <div>Sincronizar <br> Operaciones</div>
+        </button>
+
+        <button class="custom-btn w-90" @click="borrarBaseDeDatos">
+            <div class="icon-group">
+                <i class="pi pi-trash me-1"></i>
+            </div>
+            <div>Descartar <br> Operaciones</div>
+        </button>
+    </div>
 </template>
-
-

@@ -9,7 +9,8 @@ export const useCombinedStore = defineStore('CombinedStore', {
         elementosFiltrados: [],
         alertaSobreescritura: null,
         listadoSeleccionado: null,
-        elementoEncontrado: null
+        elementoEncontrado: null,
+        cargando: false
     }),
     
     actions: {
@@ -21,39 +22,56 @@ export const useCombinedStore = defineStore('CombinedStore', {
             this.listadoSeleccionado = listado
         },
 
+        setListados(listados) {
+            this.listados = listados
+        },
+
+        setElementos(elementos) {
+            this.elementos = elementos
+        },
+
         async cargarListados() {
             const puedeContinuar = await this.verificarElementosModificados()
-            if (!puedeContinuar) return console.warn('Operación interrumpida por alerta de sobreescritura.')
-
+            if (!puedeContinuar) {
+                console.warn('Operación interrumpida debido a alerta de sobreescritura')
+                return
+            }
             try {
-                const { data } = await getListados()
-                const listados = data._embedded.listados.map(listado => ({
+                const response = await getListados()
+                const listados = response.data._embedded.listados.map(listado => ({
                     ...listado,
-                    flag: null  // Indicar que no ha sido modificado localmente
+                    flag: null // Agregar el flag "null" para indicar que no se ha modificado localmente
                 }))
+                console.log("listados:", listados)
                 await db.listados.bulkPut(listados)
                 this.listados = listados
+                console.log("Listados cargados en el store: ", this.listados)
             } catch (error) {
-                console.error('Error al cargar los listados desde la API:', error)
-                this.listados = await db.listados.toArray()
+                console.error('Error al cargar los listados desde la API', error)
+                const listadosLocales = await db.listados.toArray()
+                this.listados = listadosLocales
             }
         },
 
         async cargarElementos() {
             const puedeContinuar = await this.verificarElementosModificados()
-            if (!puedeContinuar) return console.warn('Operación interrumpida por alerta de sobreescritura.')
-
+            if (!puedeContinuar) {
+                console.warn('Operación interrumpida debido a alerta de sobreescritura')
+                return
+            }
             try {
-                const { data } = await getElementos()
-                const elementos = data._embedded.elementos.map(elemento => ({
+                const response = await getElementos()
+                const elementos = response.data._embedded.elementos.map(elemento => ({
                     ...elemento,
                     flag: null
                 }))
+                console.log("elementos:", elementos)
                 await db.elementos.bulkPut(elementos)
                 this.elementos = elementos
             } catch (error) {
-                console.error('Error al cargar los elementos desde la API:', error)
-                this.elementos = await db.elementos.where('listadoId').equals(this.listadoSeleccionado?.id).toArray()
+                console.error('Error al cargar los elementos desde la API', error)
+                const elementosLocales = await db.elementos.where('listadoId').equals(this.listadoSeleccionado.id).toArray()
+                this.elementos = elementosLocales
             }
         },
 
@@ -99,6 +117,8 @@ export const useCombinedStore = defineStore('CombinedStore', {
 
             this.listadoSeleccionado = nuevoListado
             this.listados.push(nuevoListado)
+            console.log("nuevo listado creado: ", nuevoListado)
+            console.log("nuevo listado creado en el store: ", this.listadoSeleccionado)
         },
 
         async guardarEnLocal() {

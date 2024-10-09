@@ -1,13 +1,18 @@
-import { defineStore } from 'pinia';
+import { mapState, mapActions, defineStore } from 'pinia';
 import { db } from '@/storage/dexieDBConfig';
 import { postElemento, patchElemento, postListado } from '@/storage/LlamadasAPI';
+import { useCombinedStore } from '@/storage/combinedStore'
+import { host } from '@/storage/LlamadasAPI';
 
 export const useSincronizacionStore = defineStore('SincronizacionStore', {
     state: () => ({
         sincronizando: false, // Estado de sincronización
     }),
+    computed: {
+        ...mapState(useCombinedStore, ['listados', 'elementos']),
+    },
     actions: {
-        // Sincronizar operaciones (listados y elementos) entre la base de datos local y la API
+        ...mapActions(useCombinedStore, ['setElementos', 'setListados']),
         async sincronizarOperaciones() {
             this.sincronizando = true;
             try {
@@ -35,7 +40,7 @@ export const useSincronizacionStore = defineStore('SincronizacionStore', {
                     let response;
 
                     if (elemento.listadoId && listadoIdMap[elemento.listadoId]) {
-                        elementoSinFlag.listado = `https://roxanaapitest.manabo.org/api/listados/${listadoIdMap[elemento.listadoId]}`;
+                        elementoSinFlag.listado = `${host}listados/${listadoIdMap[elemento.listadoId]}`
                     }
 
                     if (flag === 'creado') {
@@ -64,7 +69,8 @@ export const useSincronizacionStore = defineStore('SincronizacionStore', {
                 const listados = await db.listados.toArray();
                 const elementos = await db.elementos.toArray();
                 console.log("Listados y Elementos cargados desde Dexie:", { listados, elementos });
-                return { listados, elementos };
+                this.setListados(listados)
+                this.setElementos(elementos)
             } catch (error) {
                 console.error("Error al cargar datos desde Dexie:", error);
             }
@@ -73,10 +79,10 @@ export const useSincronizacionStore = defineStore('SincronizacionStore', {
         // Función para borrar toda la base de datos local (listados y elementos) en Dexie
         async borrarBaseDeDatosLocal() {
             try {
-                await db.listados.clear();
-                await db.elementos.clear();
-                this.listados = []
-                this.elementos = []
+                await db.listados.clear()
+                await db.elementos.clear()
+                this.setListados([])
+                this.setElementos([])
                 console.log('Base de datos local borrada con éxito.');
             } catch (error) {
                 console.error('Error al borrar la base de datos local:', error);

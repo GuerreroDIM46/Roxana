@@ -1,7 +1,7 @@
 <script>
 import { mapState } from 'pinia'
 import { useConexionStore } from '@/storage/conexionStore'
-import conexionLibrary from '@/mixins/conexionLibrary'
+import { conexionLibrary } from '@/mixins/conexionLibrary'
 
 export default {
     mixins: [conexionLibrary], 
