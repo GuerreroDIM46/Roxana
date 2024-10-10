@@ -7,11 +7,11 @@ import { useSincronizacionStore } from '@/storage/sincronizacionStore'
 export default {
     computed: {
         ...mapState(useConexionStore, ['conexionLista']),
-        ...mapState(useCombinedStore, ['listados', 'elementos', 'cargando']),
+        ...mapState(useCombinedStore, ['listados', 'elementos', 'cargando', 'alertaSobreescritura']),
         ...mapState(useSincronizacionStore, ['sincronizando']),
     },
     methods: {
-        ...mapActions(useCombinedStore, ['cargarListados', 'cargarElementos', 'seleccionarListado']),
+        ...mapActions(useCombinedStore, ['cargarListados', 'cargarElementos', 'seleccionarListado', 'verificarElementosModificados']),
         ...mapActions(useSincronizacionStore, ['sincronizarOperaciones', 'borrarBaseDeDatosLocal', 'cargarDatosDesdeDexie']),
 
         mostrarElementos(listado) {
@@ -20,6 +20,15 @@ export default {
         },
 
         async cargarListadosYElementos() {
+            await this.verificarElementosModificados();
+            // Si hay elementos modificados, pedir confirmación antes de sobrescribir
+            if (this.alertaSobreescritura) {
+                const confirmacion = confirm("Hay elementos modificados sin guardar. ¿Deseas sobrescribirlos?");
+                if (!confirmacion) {
+                    console.warn('Operación interrumpida debido a alerta de sobreescritura');
+                    return;
+                }
+            }
             try {
                 await this.cargarListados()
                 console.log("Listados cargados en la pagina: ", this.listados)

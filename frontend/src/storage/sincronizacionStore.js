@@ -87,6 +87,35 @@ export const useSincronizacionStore = defineStore('SincronizacionStore', {
             } catch (error) {
                 console.error('Error al borrar la base de datos local:', error);
             }
+        },
+
+        async cargarDatosDesdeDexie() {
+            try {
+                const listados = await db.listados.toArray();
+                const elementos = await db.elementos.toArray();
+                console.log("Listados y Elementos cargados desde Dexie:", { listados, elementos });
+        
+                // Guardar los datos en Pinia
+                this.setListados(listados);
+                this.setElementos(elementos);
+            } catch (error) {
+                console.error("Error al cargar datos desde Dexie:", error);
+            }
+        },
+
+        async borrarBaseDeDatosLocal() {
+            try {
+                await db.listados.clear();
+                await db.elementos.clear();
+        
+                // Limpiar los estados de listados y elementos en Pinia
+                this.setListados([]);
+                this.setElementos([]);
+        
+                console.log('Base de datos local borrada con éxito.');
+            } catch (error) {
+                console.error('Error al borrar la base de datos local:', error);
+            }
         }
     }
 });

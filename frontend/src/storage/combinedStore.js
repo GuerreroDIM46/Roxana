@@ -31,11 +31,6 @@ export const useCombinedStore = defineStore('CombinedStore', {
         },
 
         async cargarListados() {
-            const puedeContinuar = await this.verificarElementosModificados()
-            if (!puedeContinuar) {
-                console.warn('Operación interrumpida debido a alerta de sobreescritura')
-                return
-            }
             try {
                 const response = await getListados()
                 const listados = response.data._embedded.listados.map(listado => ({
@@ -54,11 +49,6 @@ export const useCombinedStore = defineStore('CombinedStore', {
         },
 
         async cargarElementos() {
-            const puedeContinuar = await this.verificarElementosModificados()
-            if (!puedeContinuar) {
-                console.warn('Operación interrumpida debido a alerta de sobreescritura')
-                return
-            }
             try {
                 const response = await getElementos()
                 const elementos = response.data._embedded.elementos.map(elemento => ({
@@ -77,25 +67,18 @@ export const useCombinedStore = defineStore('CombinedStore', {
 
         async verificarElementosModificados() {
             try {
-                if (this.alertaSobreescritura == 'ignorar') return true
-
                 const [elementosModificados, listadosModificados] = await Promise.all([
                     db.elementos.where('flag').anyOf('creado', 'modificado').count(),
                     db.listados.where('flag').anyOf('creado', 'modificado').count()
-                ])
-
-                if (elementosModificados + listadosModificados > 0) {
-                    this.alertaSobreescritura = 'notificar'
-                    return false
-                }
+                ]);
+        
+                this.alertaSobreescritura = (elementosModificados + listadosModificados > 0);
                 
-                this.alertaSobreescritura = null
-                return true
             } catch (error) {
-                console.error('Error al verificar elementos y listados modificados en Dexie:', error)
-                return false
+                console.error('Error al verificar elementos y listados modificados en Dexie:', error);
             }
         },
+        
 
         filtrarPorPropiedad(elementos, campoFiltrado, valorFiltrado) {
             if (!valorFiltrado) {
