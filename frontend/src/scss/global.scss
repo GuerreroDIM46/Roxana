@@ -28,7 +28,7 @@ $armony-theme: (
 );
 
 // Selecciona el tema activo
-$active-theme: $light-theme; // Puedes cambiar entre $light-theme, $dark-theme, $high-contrast-theme
+$active-theme: $high-contrast-theme; // Puedes cambiar entre $light-theme, $dark-theme, $high-contrast-theme
 
 // Función para obtener colores desde el tema seleccionado
 @function get-color($key) {

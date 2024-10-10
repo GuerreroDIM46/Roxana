@@ -1,12 +1,12 @@
 import axios from 'axios'
 
-export const host = 'https://roxanaapitest.manabo.org/api/'
+export const host = 'https://roxana-b51eb4c4afbd.herokuapp.com/api/'
 
-const API_LISTADOSSINPAGINACION = host + 'listados/search/listadosSinPaginacion'
-const API_ELEMENTOSSINPAGINACION = host + 'elementos/search/elementosSinPaginacion'
+const API_LISTADOSSINPAGINACION = host + 'listados/listadosSinPaginacion'
+const API_ELEMENTOSSINPAGINACION = host + 'elementos/elementosSinPaginacion'
 const API_LISTADOS = host + 'listados'
 const API_ELEMENTOS = host + 'elementos'
-const API_ELEMENTOSPORLISTADO = host + 'elementos/search/elementosPorListado'
+
 
 
 function llamadaAPI(method, body, path) {
@@ -29,11 +29,6 @@ export function getListados() {
 
 export function getElementos() {
     return llamadaAPI('get', null, API_ELEMENTOSSINPAGINACION)
-}
-
-export function getElementosListado(listado) {
-    const url = `${API_ELEMENTOSPORLISTADO}?listadoId=${listado}`
-    return llamadaAPI('get', null, url)
 }
 
 export function postListado(listado) {

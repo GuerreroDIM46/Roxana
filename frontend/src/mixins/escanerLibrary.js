@@ -21,6 +21,7 @@ export const escanerLibrary = {
                     (result) => {
                         if (!result.cancelled) {
                             this.setCodigoEscaneado(result.text) 
+                            console.log("el codigo escaneado es:", this.codigoEscaneado)
                             resolve(result.text)  // Resolver la promesa con el resultado
                         } else {
                             alert("Escaneo cancelado")

@@ -10,7 +10,6 @@ export const roxanaLibrary = {
     },
     methods: {
         ...mapActions(useCombinedStore, ['setElementoEncontrado']),
-
         async realizarOperacion(tipo) {       // Puede ser 'verificacion' o 'generacion'
             try {
                 await this.escanear()   // devuelve codigoEscaneado
@@ -26,7 +25,6 @@ export const roxanaLibrary = {
                 console.error(`Error en la operación de tipo ${tipo}:`, error)
             }
         },
-
         comparar(tipo) {
             let elementos;        
             if (tipo === "verificacion") {
@@ -37,16 +35,12 @@ export const roxanaLibrary = {
                 console.log("❌Tipo de operación no reconocido.");
                 return; 
             }
-
             const elemento = elementos.find(el => el.barcode === this.codigoEscaneado);        
             this.setElementoEncontrado(elemento);        
             if (!elemento) {
                 console.log("❌Elemento no encontrado.");
             }
         },
-        
-        
-
         modificarPropiedades(tipo) {
             switch (tipo) {
                 case "verificacion":
@@ -70,7 +64,6 @@ export const roxanaLibrary = {
                     break;
             }
         },
-
         actualizarElementoEnPinia(tipo) {
             if (tipo === 'verificacion') {
                 const index = this.elementos.findIndex(el => el.id === this.elementoEncontrado.id);
