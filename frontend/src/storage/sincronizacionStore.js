@@ -12,7 +12,7 @@ export const useSincronizacionStore = defineStore('SincronizacionStore', {
         ...mapState(useCombinedStore, ['listados', 'elementos']),
     },
     actions: {
-        ...mapActions(useCombinedStore, ['setElementos', 'setListados']),
+        ...mapActions(useCombinedStore, ['setElementos', 'setListados', 'cargarListados', 'cargarElementos']),
         async sincronizarOperaciones() {
             this.sincronizando = true;
             try {
@@ -59,6 +59,8 @@ export const useSincronizacionStore = defineStore('SincronizacionStore', {
                 console.error('Error durante la sincronización:', error);
                 alert('Hubo un error al sincronizar las operaciones.');
             } finally {
+                this.cargarListados()
+                this.cargarElementos()
                 this.sincronizando = false;
             }
         },
