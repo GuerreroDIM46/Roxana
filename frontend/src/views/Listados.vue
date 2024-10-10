@@ -75,9 +75,9 @@ export default {
                 <h3>Listados Disponibles</h3>
 
                 <!-- Botón de generar listado -->
-                <button class="custom-btn w-100 mt-3" @click="generar">
+                <button class="custom-btn-secondary w-100 " @click="generar">
                     <div class="d-flex align-items-center justify-content-between">
-                        <i class="pi pi-file-plus me-2"></i>
+                        <i class="pi pi-file-plus "></i>
                         <span class="me-2">Generar Listado</span>
                         <i></i> <!-- Espacio vacío para mantener la misma estructura -->
                     </div>
@@ -88,7 +88,7 @@ export default {
         <!-- Listados disponibles con barra de scroll si hay muchos elementos -->
         <div class="row mt-2" style="max-height: 60vh; overflow-y: auto;">
             <div class="col-12">
-                <button v-for="listado in listados" :key="listado.id" class="custom-btn w-100 mt-2"
+                <button v-for="listado in listados" :key="listado.id" class="custom-btn-secondary w-100 mt-2"
                     @click="mostrarElementos(listado)">
                     <div class="d-flex align-items-center justify-content-between">
                         <i v-if="tieneElementosModificados(listado) || (listado.flag == 'creado')"
@@ -110,7 +110,7 @@ export default {
             <div class="icon-group">
                 <i class="pi pi-file-import me-1"></i>
             </div>
-            <div>Descargar <br> Operaciones</div>
+            <div>Descargar </div>
         </button>
 
         <button class="custom-btn w-90 me-1" @click="sincronizar" :disabled="!conexionLista || sincronizando"
@@ -118,14 +118,14 @@ export default {
             <div class="icon-group">
                 <i class="pi pi-file-export me-1"></i>
             </div>
-            <div>Sincronizar <br> Operaciones</div>
+            <div>Sincronizar </div>
         </button>
 
         <button class="custom-btn w-90" @click="borrarBaseDeDatos">
             <div class="icon-group">
                 <i class="pi pi-trash me-1"></i>
             </div>
-            <div>Descartar <br> Operaciones</div>
+            <div>Descartar </div>
         </button>
     </div>
 </template>

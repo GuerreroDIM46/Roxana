@@ -1,20 +1,30 @@
 // Definición de temas de colores
 $light-theme: (
-    background-color: white,  // Fondo de la aplicación, appname, span del footer
-    primary-text-color: black,    // Footer, header, iconos de botones, texto de botones
-    button-color: lightgrey           // Color de los botones
+    background-color: white,           // Fondo de la aplicación, appname, span del footer
+    primary-text-color: black,         // Footer, header, iconos de botones, texto de botones
+    button-color: lightgrey,           // Color de los botones
+    header-footer-bg-color: black    // Fondo del header y footer
 );
 
 $dark-theme: (
-    background-color: #333,
-    primary-text-color: #f0f0f0,
-    button-color: #f0f0f0
+    background-color: black,
+    primary-text-color: white,
+    button-color: darkgrey,
+    header-footer-bg-color: darkgrey     // Fondo del header y footer en dark mode
 );
 
 $high-contrast-theme: (
-    background-color: yellow,
-    primary-text-color: black,
-    button-color: black
+    background-color: orange,
+    primary-text-color: red,
+    button-color: yellow,
+    header-footer-bg-color: black       // Fondo del header y footer en high contrast
+);
+
+$armony-theme: (
+    background-color: #d4d4aa,         // Fondo de la aplicación: beige suave
+    primary-text-color: #3e432e,       // Texto principal: verde oliva oscuro
+    button-color: #6b8e23,             // Botones: verde oliva más vibrante
+    header-footer-bg-color: #4b5320 
 );
 
 // Selecciona el tema activo
@@ -71,10 +81,10 @@ body {
     color: get-color(primary-text-color); // Color del texto de los botones
 }
 
-/* Botones con iconos específicos */
-.custom-btn .pi-file-edit,
-.custom-btn .pi-file-new {
-    margin-left: 10px;
+.custom-btn-secondary {
+    @extend .custom-btn; /* Hereda los estilos de .custom-btn */
+    margin-top: 0px;
+    padding: 4px 8px;
 }
 
 /* ---------------------
@@ -105,7 +115,7 @@ body {
 --------------------- */
 
 .footer {
-    background-color: get-color(primary-text-color); // Fondo del footer
+    background-color: get-color(header-footer-bg-color); // Fondo del footer
     padding: 10px 20px;
     position: fixed;
     bottom: 0;
@@ -132,7 +142,7 @@ body {
 --------------------- */
 
 .header {
-    background-color: get-color(primary-text-color); // Color del fondo del header
+    background-color: get-color(header-footer-bg-color); // Fondo del header
     height: 8vh;
     display: flex;
     justify-content: space-between;

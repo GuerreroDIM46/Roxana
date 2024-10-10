@@ -16,8 +16,8 @@ export default {
         <div class="footer-content">
             <div class="status">
                 <span>Estado: </span>
-                <span v-if="conexionLista" style="color: green;">Online</span>
-                <span v-else style="color: red;">Offline</span>
+                <span v-if="conexionLista" >Online</span>
+                <span v-else>Offline</span>
             </div>
             <div class="brand">
                 <span>&copy; EIE</span>
